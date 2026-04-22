@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard PDCA — Liderança de Marketing</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0D2140;--navy-l:#1a3a5c;--mustard:#C8922A;--mustard-l:#F0B84A;
+  --mustard-bg:#FDF3DC;--gray-light:#E5E7EB;--gray-bg:#F3F4F6;
+  --white:#FFFFFF;--text-dark:#111827;--text-muted:#6B7280;--border:rgba(0,0,0,0.09);
+}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F4;color:var(--text-dark);min-height:100vh}
+.top-bar{background:var(--navy);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 14px rgba(0,0,0,0.22)}
+.top-bar h1{color:#fff;font-size:16px;font-weight:700;letter-spacing:-.3px;outline:none;min-width:1px}
+.top-bar p{color:rgba(255,255,255,.5);font-size:11px;margin-top:2px;outline:none;min-width:1px}
+.top-bar-right{display:flex;gap:8px;align-items:center;flex-shrink:0}
+.badge{background:rgba(255,255,255,.1);color:var(--mustard-l);font-size:11px;font-weight:700;padding:5px 13px;border-radius:20px;border:1px solid rgba(200,146,42,.35);outline:none;min-width:1px;cursor:text}
+.main{max-width:1440px;margin:0 auto;padding:20px 20px 60px}
+.export-bar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.btn-exp{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;border:1.5px solid var(--navy);color:var(--navy);background:var(--white)}
+.btn-exp:hover{background:var(--navy);color:#fff}
+.btn-exp.primary{background:var(--navy);color:#fff}
+.btn-exp.primary:hover{background:var(--navy-l)}
+#save-status{font-size:11px;color:var(--text-muted);margin-left:auto}
+.tabs{display:flex;gap:4px;background:var(--white);padding:5px;border-radius:12px;border:.5px solid var(--border);margin-bottom:20px;overflow-x:auto;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.tab-btn{flex:1;min-width:120px;padding:10px 14px;border:none;background:none;cursor:pointer;border-radius:8px;font-size:13px;font-weight:600;color:var(--text-muted);transition:all .15s;white-space:nowrap;font-family:inherit}
+.tab-btn.active{background:var(--navy);color:#fff}
+.tab-btn.ferraz-tab.active{background:#7C3AED}
+.tab-btn.ferraz-tab:not(.active){color:#7C3AED}
+.tab-btn:hover:not(.active){background:var(--gray-bg);color:var(--text-dark)}
+.bu-section{display:none}
+.bu-section.visible{display:block}
+.section-header{background:var(--navy);border-radius:11px;padding:15px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.section-header h2{color:#fff;font-size:15px;font-weight:700;outline:none;min-width:1px}
+.sec-sub{color:var(--mustard-l);font-size:12px;outline:none;min-width:1px;white-space:nowrap}
+.section-header.ferraz-header{background:linear-gradient(135deg,#4C1D95,#7C3AED)}
+
+/* KPI */
+.kpi-bar{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:6px}
+.kpi-card{background:var(--white);border:.5px solid var(--border);border-radius:10px;padding:13px 15px;border-top:3px solid var(--navy);box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.kpi-card.warn{border-top-color:var(--mustard)}.kpi-card.danger{border-top-color:#EF4444}.kpi-card.ok{border-top-color:#10B981}
+.kpi-label{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:700;margin-bottom:4px;outline:none;min-width:1px}
+.kpi-value{font-size:21px;font-weight:800;color:var(--text-dark);line-height:1;outline:none;min-width:1px}
+.kpi-sub{font-size:10px;color:var(--text-muted);margin-top:3px;outline:none;min-width:1px}
+.kpi-rm{border:none;background:none;cursor:pointer;font-size:10px;color:#EF4444;font-family:inherit;margin-top:5px;display:block}
+.kpi-actions-bar{text-align:right;margin-bottom:14px}
+.kpi-add-btn{padding:5px 12px;border:1.5px dashed var(--gray-light);background:none;border-radius:7px;font-size:11px;color:var(--text-muted);cursor:pointer;font-family:inherit}
+.kpi-add-btn:hover{border-color:var(--mustard);color:var(--mustard);background:var(--mustard-bg)}
+
+/* PRIORITY */
+.priority-legend{display:flex;gap:12px;margin-bottom:13px;align-items:center;flex-wrap:wrap}
+.pleg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted)}
+.pleg-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.edit-hint{font-size:10px;color:var(--mustard);font-weight:700;margin-left:auto;background:var(--mustard-bg);padding:4px 10px;border-radius:20px}
+
+/* PDCA */
+.pdca-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:11px;margin-bottom:22px}
+.pdca-col{border-radius:11px;overflow:hidden;border:.5px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.pdca-header{padding:11px 13px;display:flex;align-items:center;gap:9px}
+.pdca-icon{width:29px;height:29px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;flex-shrink:0}
+.pdca-ht span{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;display:block}
+.pdca-ht small{font-size:10px;display:block;font-weight:400;opacity:.7;margin-top:1px}
+.plan-col .pdca-header{background:#EEF2FF}.plan-col .pdca-icon{background:#C7D2FE;color:#3730A3}.plan-col .pdca-ht span{color:#3730A3}
+.do-col .pdca-header{background:#FEF3C7}.do-col .pdca-icon{background:#FDE68A;color:#92400E}.do-col .pdca-ht span{color:#92400E}
+.check-col .pdca-header{background:#D1FAE5}.check-col .pdca-icon{background:#6EE7B7;color:#065F46}.check-col .pdca-ht span{color:#065F46}
+.act-col .pdca-header{background:#FEE2E2}.act-col .pdca-icon{background:#FECACA;color:#991B1B}.act-col .pdca-ht span{color:#991B1B}
+.pdca-body{background:var(--white);padding:9px;min-height:180px}
+
+/* TASK */
+.task-card{background:var(--gray-bg);border-radius:8px;padding:9px 11px;margin-bottom:7px;border-left:3px solid transparent;position:relative;transition:box-shadow .15s}
+.task-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.09)}
+.task-card.priority-high{border-left-color:#EF4444}
+.task-card.priority-mid{border-left-color:var(--mustard)}
+.task-card.priority-low{border-left-color:#10B981}
+.task-card.done-card{border-left-color:#10B981;opacity:.65;background:#F0FDF4}
+.task-title{font-size:12px;font-weight:600;color:var(--text-dark);line-height:1.45;margin-bottom:5px;outline:none;min-width:1px}
+.task-title:focus{background:rgba(200,146,42,.1);border-radius:3px;padding:2px 4px;margin:-2px -4px}
+.done-card .task-title{text-decoration:line-through;color:var(--text-muted)}
+.task-meta{display:flex;align-items:center;justify-content:space-between;margin-top:4px;gap:4px}
+.task-date,.task-owner{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;cursor:pointer;outline:none;font-family:inherit;border:none;min-width:20px}
+.task-date{color:var(--text-muted);background:var(--gray-light)}
+.task-date:focus{background:var(--mustard-bg);color:#92400E}
+.task-owner{color:var(--navy-l);background:#EFF6FF}
+.task-owner:focus{background:#DBEAFE}
+.task-actions{position:absolute;top:6px;right:6px;display:none;gap:3px}
+.task-card:hover .task-actions{display:flex}
+.task-btn{width:22px;height:22px;border:none;border-radius:5px;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.07);color:var(--text-muted);font-family:inherit}
+.task-btn:hover{background:rgba(0,0,0,.15)}
+.add-task-btn{width:100%;padding:8px;border:1.5px dashed var(--gray-light);background:none;border-radius:8px;font-size:11px;color:var(--text-muted);cursor:pointer;text-align:center;margin-top:3px;font-family:inherit;transition:all .15s}
+.add-task-btn:hover{border-color:var(--mustard);color:var(--mustard);background:var(--mustard-bg)}
+
+/* ROADMAP */
+.roadmap-section{margin-bottom:24px}
+.section-label{font-size:12px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.6px;margin-bottom:11px;padding-bottom:7px;border-bottom:2px solid var(--mustard);display:inline-block}
+.roadmap-lanes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:.5px solid var(--border);border-radius:11px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.roadmap-week{background:var(--white);border-right:.5px solid var(--border)}
+.roadmap-week:last-child{border-right:none}
+.rw-header{background:var(--navy);padding:9px 12px;text-align:center}
+.rw-wl{color:rgba(255,255,255,.55);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;outline:none;min-width:1px}
+.rw-dr{color:var(--mustard-l);font-size:11px;font-weight:700;margin-top:2px;outline:none;min-width:1px}
+.rw-body{padding:8px;min-height:90px}
+.rm-pill{border-radius:5px;padding:5px 9px;margin-bottom:5px;font-size:10px;font-weight:700;cursor:text;outline:none;min-width:1px;line-height:1.35;display:block;font-family:inherit;border:none;text-align:left;width:100%}
+.rm-pill:focus{outline:2px solid var(--mustard);outline-offset:1px}
+.rm-pill.navy{background:#EFF3FA;color:#0D2140;border-left:2.5px solid var(--navy)}
+.rm-pill.mustard{background:var(--mustard-bg);color:#92400E;border-left:2.5px solid var(--mustard)}
+.rm-pill.green{background:#D1FAE5;color:#065F46;border-left:2.5px solid #10B981}
+.rm-pill.red{background:#FEE2E2;color:#991B1B;border-left:2.5px solid #EF4444}
+.rm-pill.done-pill{background:#F0FDF4;color:#6B7280;border-left:2.5px solid #10B981;text-decoration:line-through;opacity:.6}
+.add-rm-btn{width:100%;padding:6px;border:1.5px dashed rgba(0,0,0,.12);background:none;border-radius:5px;font-size:10px;color:var(--text-muted);cursor:pointer;text-align:center;font-family:inherit;margin-top:3px}
+.add-rm-btn:hover{border-color:var(--mustard);color:var(--mustard);background:var(--mustard-bg)}
+
+/* PENDENCIAS */
+.pa-section{margin-bottom:26px}
+.pa-header-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.pa-add-btn{padding:8px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.pa-add-btn:hover{background:var(--navy-l)}
+.pa-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pa-col{background:var(--white);border:.5px solid var(--border);border-radius:11px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.pa-col-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.pa-col-header.pending{background:#FEF3C7}
+.pa-col-header.done{background:#D1FAE5}
+.pa-col-title{font-size:13px;font-weight:800;display:flex;align-items:center;gap:8px}
+.pa-col-header.pending .pa-col-title{color:#92400E}
+.pa-col-header.done .pa-col-title{color:#065F46}
+.pa-col-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:13px}
+.pa-col-header.pending .pa-col-icon{background:#FDE68A}
+.pa-col-header.done .pa-col-icon{background:#6EE7B7}
+.pa-count{font-size:11px;font-weight:800;padding:3px 10px;border-radius:10px}
+.pa-col-header.pending .pa-count{background:#FDE68A;color:#92400E}
+.pa-col-header.done .pa-count{background:#6EE7B7;color:#065F46}
+.pa-body{padding:10px;min-height:100px}
+.pa-empty{font-size:12px;color:var(--text-muted);text-align:center;padding:24px 0;opacity:.6}
+.pa-row{background:var(--gray-bg);border-radius:9px;padding:11px 13px;margin-bottom:9px;border-left:3px solid var(--mustard);position:relative}
+.pa-row.done-row{border-left-color:#10B981;opacity:.78}
+.pa-row:hover .pa-row-actions{display:flex}
+.pa-row-actions{position:absolute;top:8px;right:8px;display:none;gap:3px}
+.pa-row-desc{font-size:13px;font-weight:600;color:var(--text-dark);outline:none;min-width:1px;line-height:1.4;margin-bottom:8px;margin-right:54px}
+.pa-row-desc:focus{background:rgba(200,146,42,.1);border-radius:3px;padding:2px 4px;margin-left:-4px}
+.pa-row-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.pa-meta-field{display:flex;flex-direction:column;gap:3px}
+.pa-meta-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted)}
+.pa-meta-val{font-size:12px;font-weight:600;color:var(--text-dark);outline:none;border:none;background:var(--gray-light);border-radius:5px;padding:4px 8px;font-family:inherit;cursor:text;min-width:10px}
+.pa-meta-val:focus{background:var(--mustard-bg);color:#92400E;outline:none}
+.pa-status-sel{font-size:11px;font-weight:700;border:none;border-radius:5px;padding:4px 8px;font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none;background:var(--gray-light);color:var(--text-muted)}
+.pa-status-sel.s-pending{background:#FEF3C7;color:#92400E}
+.pa-status-sel.s-done{background:#D1FAE5;color:#065F46}
+
+/* FERRAZ CARD */
+.ferraz-section{background:var(--white);border-radius:12px;border:.5px solid var(--border);overflow:hidden;margin-bottom:24px;box-shadow:0 2px 8px rgba(124,58,237,.1)}
+.ferraz-header{background:linear-gradient(135deg,#4C1D95,#7C3AED);padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.ferraz-header h3{color:#fff;font-size:15px;font-weight:700}
+.ferraz-header span{color:rgba(255,255,255,.7);font-size:11px}
+.ferraz-body{padding:14px}
+.ferraz-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ferraz-col-title{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid;}
+.ferraz-pending-title{color:#7C3AED;border-bottom-color:#7C3AED}
+.ferraz-done-title{color:#10B981;border-bottom-color:#10B981}
+.f-task{background:var(--gray-bg);border-radius:8px;padding:9px 12px;margin-bottom:7px;border-left:3px solid #7C3AED;position:relative}
+.f-task.f-done{border-left-color:#10B981;opacity:.7;background:#F0FDF4}
+.f-task:hover .task-actions{display:flex}
+.f-task-title{font-size:12px;font-weight:600;color:var(--text-dark);line-height:1.4;margin-bottom:5px;outline:none;min-width:1px}
+.f-task-title:focus{background:rgba(124,58,237,.1);border-radius:3px}
+.f-done .f-task-title{text-decoration:line-through;color:var(--text-muted)}
+.f-task-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+.f-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;border:none;font-family:inherit;cursor:text;outline:none;min-width:10px}
+.f-date{background:var(--gray-light);color:var(--text-muted)}
+.f-date:focus{background:var(--mustard-bg);color:#92400E}
+.f-pri{background:#EDE9FE;color:#7C3AED}
+.f-done-badge{background:#D1FAE5;color:#065F46}
+.add-f-btn{width:100%;padding:7px;border:1.5px dashed rgba(124,58,237,.3);background:none;border-radius:7px;font-size:11px;color:#7C3AED;cursor:pointer;text-align:center;font-family:inherit;margin-top:4px}
+.add-f-btn:hover{border-color:#7C3AED;background:#F5F3FF}
+
+@media(max-width:1000px){.pdca-grid{grid-template-columns:1fr 1fr}.roadmap-lanes{grid-template-columns:1fr 1fr}.ferraz-cols{grid-template-columns:1fr}}
+@media(max-width:650px){.pdca-grid{grid-template-columns:1fr}.roadmap-lanes{grid-template-columns:1fr}.pa-cols{grid-template-columns:1fr}.pa-row-meta{grid-template-columns:1fr 1fr}.main{padding:12px}}
+@media print{.top-bar{position:relative}.tabs,.export-bar{display:none}.bu-section{display:block!important;page-break-inside:avoid}.bu-section+.bu-section{page-break-before:always}body{background:#fff}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <h1 contenteditable="true">Dashboard de Pendências — Liderança de Marketing</h1>
+    <p contenteditable="true">Reunião Semanal · Ciclo PDCA · Atualizado 22/04/2026</p>
+  </div>
+  <div class="top-bar-right">
+    <span class="badge" contenteditable="true">Semana 22–28/04/2026</span>
+  </div>
+</div>
+
+<div class="main">
+  <div class="export-bar">
+    <button class="btn-exp primary" onclick="window.print()">🖨 Imprimir / PDF</button>
+    <button class="btn-exp" onclick="saveHTML()">💾 Salvar .html</button>
+    <button class="btn-exp" onclick="if(confirm('Restaurar estado original?'))location.reload()">↩ Restaurar</button>
+    <span id="save-status">Edições não salvas</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showBU('med',this)">🩺 Pós Medicina</button>
+    <button class="tab-btn" onclick="showBU('odonto',this)">🦷 Pós Odonto</button>
+    <button class="tab-btn" onclick="showBU('grad',this)">🎓 Graduação</button>
+    <button class="tab-btn" onclick="showBU('cross',this)">🔗 Cross-BU</button>
+    <button class="tab-btn ferraz-tab" onclick="showBU('ferraz',this)">⚡ Ferraz — To Do</button>
+  </div>
+
+  <!-- ══════════════ PÓS MEDICINA ══════════════ -->
+  <div class="bu-section visible" id="bu-med">
+    <div class="section-header">
+      <h2 contenteditable="true">Pós Medicina — Unidade de Negócio 2</h2>
+      <span class="sec-sub" contenteditable="true">@Squad · @Comunicação · @CX · @Martech</span>
+    </div>
+
+    <div class="kpi-bar" id="kpi-med">
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">+14%</div><div class="kpi-sub" contenteditable="true">R$17,8M esperado fech. abr · Meta R$15,5M</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">CAC Abril</div><div class="kpi-value" contenteditable="true">R$3.9K</div><div class="kpi-sub" contenteditable="true">Recuperado — orçado R$4,3K ✅</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Vendas Abril</div><div class="kpi-value" contenteditable="true">106%</div><div class="kpi-sub" contenteditable="true">70 pagos · Meta 66 ✅</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Matrículas vs Meta</div><div class="kpi-value" contenteditable="true">−29%</div><div class="kpi-sub" contenteditable="true">Atraso assinaturas de contrato</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Projeção Anual</div><div class="kpi-value" contenteditable="true">R$65M</div><div class="kpi-sub" contenteditable="true">R$6–7M acima do orçamento</div></div>
+    </div>
+    <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-med')">+ Novo indicador</button></div>
+
+    <div class="priority-legend">
+      <span style="font-size:11px;font-weight:700;color:var(--text-muted)">Prioridade:</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#EF4444"></span>Alta</span>
+      <span class="pleg"><span class="pleg-dot" style="background:var(--mustard)"></span>Média</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#10B981"></span>Normal</span>
+      <span class="edit-hint">✎ Clique em qualquer texto para editar</span>
+    </div>
+
+    <div class="pdca-grid">
+      <div class="pdca-col plan-col"><div class="pdca-header"><div class="pdca-icon">P</div><div class="pdca-ht"><span>Plan</span><small>Planejar</small></div></div><div class="pdca-body" id="med-plan">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Mapeamento concorrência: Ginecologia, Medicina do Trabalho e Medicina de Emergência</div><div class="task-meta"><span class="task-date" contenteditable="true">Mai</span><span class="task-owner" contenteditable="true">@Inteligência</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Estrutura coordenadores dedicados à retenção — reunião amanhã para definir modelo</div><div class="task-meta"><span class="task-date" contenteditable="true">23/04</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Isca simulado de residência médica — campanha ativa em mai/jun</div><div class="task-meta"><span class="task-date" contenteditable="true">Mai</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Revisão nome curso Ginecologia e estratégia GTM</div><div class="task-meta"><span class="task-date" contenteditable="true">Abr</span><span class="task-owner" contenteditable="true">@Produto</span></div></div>
+        <button class="add-task-btn" onclick="addTask('med-plan','med-do')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col do-col"><div class="pdca-header"><div class="pdca-icon">D</div><div class="pdca-ht"><span>Do</span><small>Executar</small></div></div><div class="pdca-body" id="med-do">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Campanha Ginecologia ativa — monitorar conversão e ajustar</div><div class="task-meta"><span class="task-date" contenteditable="true">22–28/04</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Novos vídeos Nutrologia — edição e publicação até fim de semana</div><div class="task-meta"><span class="task-date" contenteditable="true">25/04</span><span class="task-owner" contenteditable="true">@Comunicação</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Migração CX Pós-Médica para Zendesk — organizar processos pós-migração</div><div class="task-meta"><span class="task-date" contenteditable="true">Abr</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Onboarding de Inteligência Competitiva com times das unidades</div><div class="task-meta"><span class="task-date" contenteditable="true">23/04</span><span class="task-owner" contenteditable="true">@Inteligência</span></div></div>
+        <button class="add-task-btn" onclick="addTask('med-do','med-check')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col check-col"><div class="pdca-header"><div class="pdca-icon">C</div><div class="pdca-ht"><span>Check</span><small>Verificar</small></div></div><div class="pdca-body" id="med-check">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Acompanhar CAC semana a semana — meta: voltar a R$4,3K ou abaixo</div><div class="task-meta"><span class="task-date" contenteditable="true">Semanal</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Monitorar taxa evasão — projeção 3% final de abril (alerta)</div><div class="task-meta"><span class="task-date" contenteditable="true">Semanal</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'med-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Validar atraso assinaturas contratos — 29% gap matrículas</div><div class="task-meta"><span class="task-date" contenteditable="true">Sem 22/04</span><span class="task-owner" contenteditable="true">@Comercial</span></div></div>
+        <button class="add-task-btn" onclick="addTask('med-check','med-act')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col act-col"><div class="pdca-header"><div class="pdca-icon">A</div><div class="pdca-ht"><span>Act</span><small>Agir/Ajustar</small></div></div><div class="pdca-body" id="med-act">
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Campanha topo funil IPGM — criativos no ar ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Comunicação</span></div></div>
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Gravação Dr. Neto (Nutrologia) — concluída ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Comunicação</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Aprovação Susana — destravar MGM V2 Go-Live</div><div class="task-meta"><span class="task-date" contenteditable="true">Urgente</span><span class="task-owner" contenteditable="true">@Ferraz/Susana</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Revisão argumentação retenção + ativar coordenadores</div><div class="task-meta"><span class="task-date" contenteditable="true">15/05</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <button class="add-task-btn" onclick="addTask('med-act',null)">+ Adicionar</button>
+      </div></div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="section-label">Roadmap — Pós Medicina</div>
+      <div class="roadmap-lanes">
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Esta semana</div><div class="rw-dr" contenteditable="true">22–25/04</div></div><div class="rw-body"><button class="rm-pill green done-pill" contenteditable="true">✅ Campanha topo IPGM</button><button class="rm-pill navy" contenteditable="true">Vídeos Nutrologia editados</button><button class="rm-pill red" contenteditable="true">Destravar MGM V2 (Susana)</button><button class="rm-pill mustard" contenteditable="true">Reunião estrutura retenção</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Próxima semana</div><div class="rw-dr" contenteditable="true">28/04–02/05</div></div><div class="rw-body"><button class="rm-pill mustard" contenteditable="true">Onboarding IC unidades</button><button class="rm-pill navy" contenteditable="true">Acompanhar CAC e evasão</button><button class="rm-pill red" contenteditable="true">Resolver gap matrículas (atraso assinatura)</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Mai — início</div><div class="rw-dr" contenteditable="true">05–16/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Isca simulado residência</button><button class="rm-pill mustard" contenteditable="true">Coord. retenção operacionais</button><button class="rm-pill navy" contenteditable="true">Mapeamento concorrência</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Mai — fim</div><div class="rw-dr" contenteditable="true">19–30/05</div></div><div class="rw-body"><button class="rm-pill red" contenteditable="true">Campanha Ginecologia revisada</button><button class="rm-pill navy" contenteditable="true">Meta NPS 26.1 definida</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+      </div>
+    </div>
+
+    <div class="pa-section">
+      <div class="pa-header-row"><div class="section-label" style="margin-bottom:0">Pendências / Plano de Ação</div><button class="pa-add-btn" onclick="addPA('med')">+ Nova Pendência</button></div>
+      <div class="pa-cols">
+        <div class="pa-col"><div class="pa-col-header pending"><div class="pa-col-title"><span class="pa-col-icon">⏳</span>Pendente</div><span class="pa-count" id="cnt-med-pending">2</span></div>
+          <div class="pa-body" id="pa-med-pending">
+            <div class="pa-row" data-bu="med"><div class="pa-row-actions"><button class="task-btn" title="Mover" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Aprovação financeiro para Go-Live MGM V2 — destravar junto à Susana</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">Ferraz / Susana</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">Urgente</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+            <div class="pa-row" data-bu="med"><div class="pa-row-actions"><button class="task-btn" title="Mover" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Resolver gap de −29% em matrículas (atraso na assinatura de contratos)</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Comercial</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">Sem 22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+        <div class="pa-col"><div class="pa-col-header done"><div class="pa-col-title"><span class="pa-col-icon">✅</span>Concluído (Feito)</div><span class="pa-count" id="cnt-med-done">2</span></div>
+          <div class="pa-body" id="pa-med-done">
+            <div class="pa-row done-row" data-bu="med"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Gravação Dr. Neto (Nutrologia) finalizada</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Comunicação</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">13/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+            <div class="pa-row done-row" data-bu="med"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Migração CX para Zendesk (Pós-Médica) concluída</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@CX</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ PÓS ODONTO ══════════════ -->
+  <div class="bu-section" id="bu-odonto">
+    <div class="section-header">
+      <h2 contenteditable="true">Pós Odonto — Unidade de Negócio 1</h2>
+      <span class="sec-sub" contenteditable="true">@Squad · @Comunicação · @CX · @Martech</span>
+    </div>
+
+    <div class="kpi-bar" id="kpi-odonto">
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">−9.7%</div><div class="kpi-sub" contenteditable="true">R$54,4M · Meta R$60,2M</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Topo de Funil</div><div class="kpi-value" contenteditable="true">+25%</div><div class="kpi-sub" contenteditable="true">Inscritos 25% acima da meta ✅</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Pagos vs Meta</div><div class="kpi-value" contenteditable="true">+17%</div><div class="kpi-sub" contenteditable="true">312 pagos · 40% vs ano anterior</div></div>
+      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">CAC Geral</div><div class="kpi-value" contenteditable="true">R$8.3K</div><div class="kpi-sub" contenteditable="true">+167% MoM Google — crítico</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Alunos Ativos / Evasão</div><div class="kpi-value" contenteditable="true">8.381</div><div class="kpi-sub" contenteditable="true">0,9% cancel. · 78 solicit. mês</div></div>
+    </div>
+    <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-odonto')">+ Novo indicador</button></div>
+
+    <div class="priority-legend">
+      <span style="font-size:11px;font-weight:700;color:var(--text-muted)">Prioridade:</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#EF4444"></span>Alta</span>
+      <span class="pleg"><span class="pleg-dot" style="background:var(--mustard)"></span>Média</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#10B981"></span>Normal</span>
+      <span class="edit-hint">✎ Clique em qualquer texto para editar</span>
+    </div>
+
+    <div class="pdca-grid">
+      <div class="pdca-col plan-col"><div class="pdca-header"><div class="pdca-icon">P</div><div class="pdca-ht"><span>Plan</span><small>Planejar</small></div></div><div class="pdca-body" id="odonto-plan">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Pesquisa "Trilha do Conhecimento" — mapeamento próximo passo carreira de concluintes</div><div class="task-meta"><span class="task-date" contenteditable="true">Mai</span><span class="task-owner" contenteditable="true">@CX / @Processos</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Minuta padrão de parcerias — agilizar processo atual de 6 meses</div><div class="task-meta"><span class="task-date" contenteditable="true">Mai</span><span class="task-owner" contenteditable="true">@Ferraz</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Novas LPs (topo e fundo de funil) — resolver queda conversão</div><div class="task-meta"><span class="task-date" contenteditable="true">30/04</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Novas iscas com IA para campanhas de mídia</div><div class="task-meta"><span class="task-date" contenteditable="true">30/04</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <button class="add-task-btn" onclick="addTask('odonto-plan','odonto-do')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col do-col"><div class="pdca-header"><div class="pdca-icon">D</div><div class="pdca-ht"><span>Do</span><small>Executar</small></div></div><div class="pdca-body" id="odonto-do">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Teste FUP SDR com IA — em execução, acompanhar resultados</div><div class="task-meta"><span class="task-date" contenteditable="true">30/04</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Reforço time comercial — 3 entrevistas agendadas esta semana</div><div class="task-meta"><span class="task-date" contenteditable="true">30/04</span><span class="task-owner" contenteditable="true">@RH / @Comercial</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Zerar backlog casos "Em Retenção" jan/fev/mar — conforme entrega realizada</div><div class="task-meta"><span class="task-date" contenteditable="true">24/04</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Revisão objetivo campanhas + automação de acompanhamentos (squad)</div><div class="task-meta"><span class="task-date" contenteditable="true">24/04</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Cards de curso com IA — produção 300+ cards semestrais (saving R$74K/ano)</div><div class="task-meta"><span class="task-date" contenteditable="true">24/04</span><span class="task-owner" contenteditable="true">@Maurício</span></div></div>
+        <button class="add-task-btn" onclick="addTask('odonto-do','odonto-check')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col check-col"><div class="pdca-header"><div class="pdca-icon">C</div><div class="pdca-ht"><span>Check</span><small>Verificar</small></div></div><div class="pdca-body" id="odonto-check">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Análise cancelamentos por professor / unidade / tempo — apenas 3 unidades com retenção</div><div class="task-meta"><span class="task-date" contenteditable="true">24/04</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Investigar CAC +167% Google — identif. causa raiz e propor ajuste</div><div class="task-meta"><span class="task-date" contenteditable="true">25/04</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Planilha de Status Report semanal com coordenadores — criar e validar</div><div class="task-meta"><span class="task-date" contenteditable="true">27/04</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <div class="task-card priority-low"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'odonto-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Acompanhar estoque inscritos não pagos semanal</div><div class="task-meta"><span class="task-date" contenteditable="true">Semanal</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <button class="add-task-btn" onclick="addTask('odonto-check','odonto-act')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col act-col"><div class="pdca-header"><div class="pdca-icon">A</div><div class="pdca-ht"><span>Act</span><small>Agir/Ajustar</small></div></div><div class="pdca-body" id="odonto-act">
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Revisão objetivo campanhas — concluída ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Rotina gravação com creators — estruturada ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Comunicação</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Resolver contratações BH e Fortaleza (vagas Fields abertas)</div><div class="task-meta"><span class="task-date" contenteditable="true">Urgente</span><span class="task-owner" contenteditable="true">@RH</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Revisão fluxo trancamento — prazo comprometido na reunião anterior</div><div class="task-meta"><span class="task-date" contenteditable="true">27/04</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <button class="add-task-btn" onclick="addTask('odonto-act',null)">+ Adicionar</button>
+      </div></div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="section-label">Roadmap — Pós Odonto</div>
+      <div class="roadmap-lanes">
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Esta semana</div><div class="rw-dr" contenteditable="true">22–25/04</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">FUP SDR IA em execução</button><button class="rm-pill red" contenteditable="true">CAC +167% — investigar</button><button class="rm-pill mustard" contenteditable="true">Cards IA (Maurício - 24/04)</button><button class="rm-pill navy" contenteditable="true">Análise cancel. 24/04</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Próxima semana</div><div class="rw-dr" contenteditable="true">28/04–02/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Planilha status semanal coord.</button><button class="rm-pill red" contenteditable="true">Fluxo trancamento revisado</button><button class="rm-pill mustard" contenteditable="true">Reforço time comercial</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Início de Maio</div><div class="rw-dr" contenteditable="true">05–16/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Novas LPs topo e fundo</button><button class="rm-pill mustard" contenteditable="true">Iscas com IA</button><button class="rm-pill red" contenteditable="true">Pesquisa Trilha do Conhecimento</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Mai — fim</div><div class="rw-dr" contenteditable="true">19–30/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Centralização secretaria (Campinas)</button><button class="rm-pill mustard" contenteditable="true">Minuta padrão parcerias</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+      </div>
+    </div>
+
+    <div class="pa-section">
+      <div class="pa-header-row"><div class="section-label" style="margin-bottom:0">Pendências / Plano de Ação</div><button class="pa-add-btn" onclick="addPA('odonto')">+ Nova Pendência</button></div>
+      <div class="pa-cols">
+        <div class="pa-col"><div class="pa-col-header pending"><div class="pa-col-title"><span class="pa-col-icon">⏳</span>Pendente</div><span class="pa-count" id="cnt-odonto-pending">2</span></div>
+          <div class="pa-body" id="pa-odonto-pending">
+            <div class="pa-row" data-bu="odonto"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Investigar e resolver CAC +167% Google — apresentar causa raiz na próxima reunião</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Squad</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">25/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+            <div class="pa-row" data-bu="odonto"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Resolução processo retenção — apenas 3 unidades com retenção ativa (SP, Campinas, Araras)</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@CX / Michelle</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">27/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+        <div class="pa-col"><div class="pa-col-header done"><div class="pa-col-title"><span class="pa-col-icon">✅</span>Concluído (Feito)</div><span class="pa-count" id="cnt-odonto-done">2</span></div>
+          <div class="pa-body" id="pa-odonto-done">
+            <div class="pa-row done-row" data-bu="odonto"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Revisão objetivo de campanhas concluída</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Squad</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">17/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+            <div class="pa-row done-row" data-bu="odonto"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Backlog retenção jan/fev/mar zerado</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@CX</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ GRADUAÇÃO ══════════════ -->
+  <div class="bu-section" id="bu-grad">
+    <div class="section-header">
+      <h2 contenteditable="true">Graduação — Unidade de Negócio 3</h2>
+      <span class="sec-sub" contenteditable="true">@Squad · @Comunicação · @CX · @Fields</span>
+    </div>
+
+    <div class="kpi-bar" id="kpi-grad">
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">−0.9%</div><div class="kpi-sub" contenteditable="true">Evasão 4x acima do orçado impacta</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Conv. Inscr→Pago</div><div class="kpi-value" contenteditable="true">5%</div><div class="kpi-sub" contenteditable="true">Melhora de 3,4% → 5% ✅ +47%</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Pagos Semana</div><div class="kpi-value" contenteditable="true">+44</div><div class="kpi-sub" contenteditable="true">22 Araras→Limeira + 22 orgânicos</div></div>
+      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">Evasão Medicina</div><div class="kpi-value" contenteditable="true">1.70%</div><div class="kpi-sub" contenteditable="true">vs 0,47% orçado — 4x maior</div></div>
+      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">Gap Receita (Araras+Campinas)</div><div class="kpi-value" contenteditable="true">−R$7.3M</div><div class="kpi-sub" contenteditable="true">Turmas não abertas (MEC)</div></div>
+    </div>
+    <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-grad')">+ Novo indicador</button></div>
+
+    <div class="priority-legend">
+      <span style="font-size:11px;font-weight:700;color:var(--text-muted)">Prioridade:</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#EF4444"></span>Alta</span>
+      <span class="pleg"><span class="pleg-dot" style="background:var(--mustard)"></span>Média</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#10B981"></span>Normal</span>
+      <span class="edit-hint">✎ Clique em qualquer texto para editar</span>
+    </div>
+
+    <div class="pdca-grid">
+      <div class="pdca-col plan-col"><div class="pdca-header"><div class="pdca-icon">P</div><div class="pdca-ht"><span>Plan</span><small>Planejar</small></div></div><div class="pdca-body" id="grad-plan">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Cliente oculto FMS — estruturar visitas e relatório até 15/05</div><div class="task-meta"><span class="task-date" contenteditable="true">6–8/05 visitas · rel. 15/05</span><span class="task-owner" contenteditable="true">@Inteligência</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Plano ativação Atlética + Lançamento Medway</div><div class="task-meta"><span class="task-date" contenteditable="true">Abr</span><span class="task-owner" contenteditable="true">@Comunicação</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Campanha TOP CEPS por unidade — nova aposta em teste</div><div class="task-meta"><span class="task-date" contenteditable="true">Abr</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Revisão processo captação e matrícula com foco em tecnologia (reunião Tabata 23/04)</div><div class="task-meta"><span class="task-date" contenteditable="true">23/04</span><span class="task-owner" contenteditable="true">@Martech</span></div></div>
+        <button class="add-task-btn" onclick="addTask('grad-plan','grad-do')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col do-col"><div class="pdca-header"><div class="pdca-icon">D</div><div class="pdca-ht"><span>Do</span><small>Executar</small></div></div><div class="pdca-body" id="grad-do">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Blitz Limeira — início 27/04 (22 cursinhos + 4 colégios mapeados)</div><div class="task-meta"><span class="task-date" contenteditable="true">27/04</span><span class="task-owner" contenteditable="true">@Fields</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Fase 3 criativos captação — aprovação e ativação (infra, depoimentos)</div><div class="task-meta"><span class="task-date" contenteditable="true">22/04</span><span class="task-owner" contenteditable="true">@Comunicação</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Campanha remarketing — novos conteúdos captados</div><div class="task-meta"><span class="task-date" contenteditable="true">24/04</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Iscas topo funil: simulado vestibular, conteúdo degustação medicina, material estudo</div><div class="task-meta"><span class="task-date" contenteditable="true">Abr</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">OOH e mídias alternativas — ativação (plano fechado)</div><div class="task-meta"><span class="task-date" contenteditable="true">27/04</span><span class="task-owner" contenteditable="true">@Comunicação</span></div></div>
+        <button class="add-task-btn" onclick="addTask('grad-do','grad-check')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col check-col"><div class="pdca-header"><div class="pdca-icon">C</div><div class="pdca-ht"><span>Check</span><small>Verificar</small></div></div><div class="pdca-body" id="grad-check">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Monitorar conversão inscr→pago semanal — manter acima de 5%</div><div class="task-meta"><span class="task-date" contenteditable="true">Semanal</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Acompanhar pagos (Limeira 76/290 · Sertão 56/355) — ritmo exige aceleração</div><div class="task-meta"><span class="task-date" contenteditable="true">Semanal</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Validação base NPS com Anderson / José Paulo</div><div class="task-meta"><span class="task-date" contenteditable="true">Sem 28/04</span><span class="task-owner" contenteditable="true">@Matheus</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'grad-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Acompanhar Meta (instável) — CTR caiu 97% FMS; subir criativos topo</div><div class="task-meta"><span class="task-date" contenteditable="true">Semanal</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <button class="add-task-btn" onclick="addTask('grad-check','grad-act')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col act-col"><div class="pdca-header"><div class="pdca-icon">A</div><div class="pdca-ht"><span>Act</span><small>Agir/Ajustar</small></div></div><div class="pdca-body" id="grad-act">
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Manychat WhatsApp — 1ª mensagem em 20min pós-inscrição ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">22 transferências Araras→Limeira realizadas (51% conversão) ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Fields</span></div></div>
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">+7 melhorias na ficha de inscrição ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Plano trabalho evasão medicina — 1,70% vs 0,47% orçado (4x acima)</div><div class="task-meta"><span class="task-date" contenteditable="true">Urgente</span><span class="task-owner" contenteditable="true">@CX</span></div></div>
+        <button class="add-task-btn" onclick="addTask('grad-act',null)">+ Adicionar</button>
+      </div></div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="section-label">Roadmap — Graduação</div>
+      <div class="roadmap-lanes">
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Esta semana</div><div class="rw-dr" contenteditable="true">22–25/04</div></div><div class="rw-body"><button class="rm-pill green done-pill" contenteditable="true">✅ Manychat ativo (20min)</button><button class="rm-pill navy" contenteditable="true">Aprovação fase 3 criativos</button><button class="rm-pill mustard" contenteditable="true">Campanha remarketing 24/04</button><button class="rm-pill navy" contenteditable="true">Reunião Tabata (processo+tech)</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Próxima semana</div><div class="rw-dr" contenteditable="true">27/04–02/05</div></div><div class="rw-body"><button class="rm-pill red" contenteditable="true">Blitz Limeira — início 27/04</button><button class="rm-pill navy" contenteditable="true">OOH ativação (27/04)</button><button class="rm-pill mustard" contenteditable="true">Plano OOH FMS (busca agência)</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Início de Maio</div><div class="rw-dr" contenteditable="true">05–16/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Cliente oculto FMS (6–8/05)</button><button class="rm-pill red" contenteditable="true">Plano evasão medicina</button><button class="rm-pill mustard" contenteditable="true">FMS Blitz início (11/05)</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Mai — fim</div><div class="rw-dr" contenteditable="true">15–30/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Relatório cliente oculto (15/05)</button><button class="rm-pill mustard" contenteditable="true">NPS 26.1 base validada</button><button class="rm-pill red" contenteditable="true">Feiras BR: 1ª em 15/05 (MA)</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+      </div>
+    </div>
+
+    <div class="pa-section">
+      <div class="pa-header-row"><div class="section-label" style="margin-bottom:0">Pendências / Plano de Ação</div><button class="pa-add-btn" onclick="addPA('grad')">+ Nova Pendência</button></div>
+      <div class="pa-cols">
+        <div class="pa-col"><div class="pa-col-header pending"><div class="pa-col-title"><span class="pa-col-icon">⏳</span>Pendente</div><span class="pa-count" id="cnt-grad-pending">2</span></div>
+          <div class="pa-body" id="pa-grad-pending">
+            <div class="pa-row" data-bu="grad"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Plano para conter evasão medicina (1,70% vs 0,47% orçado — 4x acima)</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@CX</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">Urgente</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+            <div class="pa-row" data-bu="grad"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Matheus — validação base NPS com Anderson / José Paulo</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Matheus</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">Sem 28/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+        <div class="pa-col"><div class="pa-col-header done"><div class="pa-col-title"><span class="pa-col-icon">✅</span>Concluído (Feito)</div><span class="pa-count" id="cnt-grad-done">3</span></div>
+          <div class="pa-body" id="pa-grad-done">
+            <div class="pa-row done-row" data-bu="grad"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Manychat implantado — 1ª mensagem WhatsApp em 20min pós-inscrição</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Squad</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+            <div class="pa-row done-row" data-bu="grad"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">22 transferências Araras→Limeira (51% de conversão)</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Fields</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+            <div class="pa-row done-row" data-bu="grad"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">+7 melhorias na ficha de inscrição implementadas</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Squad</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ CROSS-BU ══════════════ -->
+  <div class="bu-section" id="bu-cross">
+    <div class="section-header">
+      <h2 contenteditable="true">Cross-BU — Projetos Estruturantes</h2>
+      <span class="sec-sub" contenteditable="true">@Martech · @CRM · @Fields · @IA</span>
+    </div>
+
+    <div class="kpi-bar" id="kpi-cross">
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CRM HubSpot</div><div class="kpi-value" contenteditable="true">30%</div><div class="kpi-sub" contenteditable="true">↑ de 20% — próximo marco 24/04</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CDP / GA4 / GTM</div><div class="kpi-value" contenteditable="true">40%</div><div class="kpi-sub" contenteditable="true">Em andamento — data quality e KPIs</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V2 Pós Médica</div><div class="kpi-value" contenteditable="true">90%</div><div class="kpi-sub" contenteditable="true">Travado — aguarda Susana</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V3 (BeeViral)</div><div class="kpi-value" contenteditable="true">10%</div><div class="kpi-sub" contenteditable="true">Andressa agenda análise até sexta</div></div>
+    </div>
+    <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-cross')">+ Novo indicador</button></div>
+
+    <div class="priority-legend">
+      <span style="font-size:11px;font-weight:700;color:var(--text-muted)">Prioridade:</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#EF4444"></span>Alta</span>
+      <span class="pleg"><span class="pleg-dot" style="background:var(--mustard)"></span>Média</span>
+      <span class="pleg"><span class="pleg-dot" style="background:#10B981"></span>Normal</span>
+      <span class="edit-hint">✎ Clique em qualquer texto para editar</span>
+    </div>
+
+    <div class="pdca-grid">
+      <div class="pdca-col plan-col"><div class="pdca-header"><div class="pdca-icon">P</div><div class="pdca-ht"><span>Plan</span><small>Planejar</small></div></div><div class="pdca-body" id="cross-plan">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">NPS 26.1 — definição de meta por unidade + painel indicadores + ritual semanal</div><div class="task-meta"><span class="task-date" contenteditable="true">24–30/04</span><span class="task-owner" contenteditable="true">@CX / @Ana</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Análise orçado vs realizado com quebras (Anderson) — apresentar fim de semana</div><div class="task-meta"><span class="task-date" contenteditable="true">25/04</span><span class="task-owner" contenteditable="true">@Anderson</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-do')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Integração checkout→portal do aluno — eliminar hiato matrícula/acesso</div><div class="task-meta"><span class="task-date" contenteditable="true">Mai</span><span class="task-owner" contenteditable="true">@Martech</span></div></div>
+        <button class="add-task-btn" onclick="addTask('cross-plan','cross-do')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col do-col"><div class="pdca-header"><div class="pdca-icon">D</div><div class="pdca-ht"><span>Do</span><small>Executar</small></div></div><div class="pdca-body" id="cross-do">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">IA Criativos (Maurício) — 24/04 rodando. Foco: variações de layout e especialidades</div><div class="task-meta"><span class="task-date" contenteditable="true">24/04</span><span class="task-owner" contenteditable="true">@Maurício</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Bruno — agendar análise técnica/comercial MGM V3 com Andressa (até sexta)</div><div class="task-meta"><span class="task-date" contenteditable="true">25/04</span><span class="task-owner" contenteditable="true">@Bruno</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Validação Data Lake CRM — agenda amanhã com Tecnologia (23/04)</div><div class="task-meta"><span class="task-date" contenteditable="true">23/04</span><span class="task-owner" contenteditable="true">@Martech</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-check')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Automação Looker — centralizar dados, economia de tempo (já em uso)</div><div class="task-meta"><span class="task-date" contenteditable="true">Contínuo</span><span class="task-owner" contenteditable="true">@Squad</span></div></div>
+        <button class="add-task-btn" onclick="addTask('cross-do','cross-check')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col check-col"><div class="pdca-header"><div class="pdca-icon">C</div><div class="pdca-ht"><span>Check</span><small>Verificar</small></div></div><div class="pdca-body" id="cross-check">
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Monitorar CRM — marco higienização + data lake (prazo 24/04)</div><div class="task-meta"><span class="task-date" contenteditable="true">24/04</span><span class="task-owner" contenteditable="true">@Martech</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Ana — dados campanha topo funil (apresentar segunda-feira 28/04)</div><div class="task-meta"><span class="task-date" contenteditable="true">28/04</span><span class="task-owner" contenteditable="true">@Ana</span></div></div>
+        <div class="task-card priority-low"><div class="task-actions"><button class="task-btn" onclick="moveCard(this,'cross-act')">→</button><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Modelo agendamento clínica — implementação 4/05</div><div class="task-meta"><span class="task-date" contenteditable="true">04/05</span><span class="task-owner" contenteditable="true">@Martech</span></div></div>
+        <button class="add-task-btn" onclick="addTask('cross-check','cross-act')">+ Adicionar</button>
+      </div></div>
+
+      <div class="pdca-col act-col"><div class="pdca-header"><div class="pdca-icon">A</div><div class="pdca-ht"><span>Act</span><small>Agir/Ajustar</small></div></div><div class="pdca-body" id="cross-act">
+        <div class="task-card done-card"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Raul — automações clínica (agendamento, base, sistemas) implementadas ✅</div><div class="task-meta"><span class="task-date" contenteditable="true">✅ Concluído</span><span class="task-owner" contenteditable="true">@Raul</span></div></div>
+        <div class="task-card priority-high"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Destravar MGM V2 — remover dependência da aprovação de Susana</div><div class="task-meta"><span class="task-date" contenteditable="true">Urgente</span><span class="task-owner" contenteditable="true">@Ferraz</span></div></div>
+        <div class="task-card priority-mid"><div class="task-actions"><button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Showcase IA — All Hands: apenas iniciativas funcionais com resultados reais</div><div class="task-meta"><span class="task-date" contenteditable="true">Mai</span><span class="task-owner" contenteditable="true">@Todos</span></div></div>
+        <button class="add-task-btn" onclick="addTask('cross-act',null)">+ Adicionar</button>
+      </div></div>
+    </div>
+
+    <div class="roadmap-section">
+      <div class="section-label">Roadmap — Cross-BU</div>
+      <div class="roadmap-lanes">
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Esta semana</div><div class="rw-dr" contenteditable="true">22–25/04</div></div><div class="rw-body"><button class="rm-pill red" contenteditable="true">IA Criativos rodando (24/04)</button><button class="rm-pill red" contenteditable="true">Bruno agenda MGM V3 (sexta)</button><button class="rm-pill navy" contenteditable="true">Validação Data Lake CRM (23/04)</button><button class="rm-pill mustard" contenteditable="true">Anderson análise orçado/real</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Próxima semana</div><div class="rw-dr" contenteditable="true">28/04–02/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Ana: dados campanha topo (28/04)</button><button class="rm-pill mustard" contenteditable="true">NPS 26.1 — painel + ritual</button><button class="rm-pill red" contenteditable="true">Destravar MGM V2 (Susana)</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Início de Maio</div><div class="rw-dr" contenteditable="true">05–16/05</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">Modelo agendamento clínica (4/05)</button><button class="rm-pill mustard" contenteditable="true">Showcase IA — All Hands</button><button class="rm-pill navy" contenteditable="true">CDP enriquecimento base (60d)</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+        <div class="roadmap-week"><div class="rw-header"><div class="rw-wl" contenteditable="true">Mai — fim / Jun</div><div class="rw-dr" contenteditable="true">19/05–Jun</div></div><div class="rw-body"><button class="rm-pill navy" contenteditable="true">CRM unificado cross-BU</button><button class="rm-pill mustard" contenteditable="true">Integração checkout→portal aluno</button><button class="rm-pill red" contenteditable="true">Secretaria → Campinas centralizada</button><button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>
+      </div>
+    </div>
+
+    <div class="pa-section">
+      <div class="pa-header-row"><div class="section-label" style="margin-bottom:0">Pendências / Plano de Ação</div><button class="pa-add-btn" onclick="addPA('cross')">+ Nova Pendência</button></div>
+      <div class="pa-cols">
+        <div class="pa-col"><div class="pa-col-header pending"><div class="pa-col-title"><span class="pa-col-icon">⏳</span>Pendente</div><span class="pa-count" id="cnt-cross-pending">2</span></div>
+          <div class="pa-body" id="pa-cross-pending">
+            <div class="pa-row" data-bu="cross"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Aprovação Susana — MGM V2 Go-Live travado há semanas</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">Ferraz / Susana</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">Urgente</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+            <div class="pa-row" data-bu="cross"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Agregar eventos ao orçamento 2027 — registrar oportunidades identificadas</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Ferraz / Times</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">Jun</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+        <div class="pa-col"><div class="pa-col-header done"><div class="pa-col-title"><span class="pa-col-icon">✅</span>Concluído (Feito)</div><span class="pa-count" id="cnt-cross-done">2</span></div>
+          <div class="pa-body" id="pa-cross-done">
+            <div class="pa-row done-row" data-bu="cross"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Automação Looker — centralização de dados dos squads</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Squad</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+            <div class="pa-row done-row" data-bu="cross"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Automações clínica — Raul implementou múltiplas sem pedir aprovação</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Raul</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">22/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-done" onchange="onSelChange(this)"><option value="pending">⏳ Pendente</option><option value="done" selected>✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ FERRAZ — TO DO ══════════════ -->
+  <div class="bu-section" id="bu-ferraz">
+    <div class="section-header ferraz-header">
+      <h2 contenteditable="true">⚡ Ferraz — To Do Pessoal</h2>
+      <span class="sec-sub" contenteditable="true">Tarefas atribuídas diretamente / Cobranças executivas · Reunião 22/04/2026</span>
+    </div>
+
+    <div class="ferraz-section">
+      <div class="ferraz-header">
+        <h3>Tarefas com prazo definido esta semana</h3>
+        <span>Fonte: Transcrições Ferraz + PPT 22/04</span>
+      </div>
+      <div class="ferraz-body">
+        <div class="ferraz-cols">
+          <div>
+            <div class="ferraz-col-title ferraz-pending-title">⏳ Pendente / Em andamento</div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Destravar MGM V2 — resolver aprovação com Susana (bloqueio identificado na reunião)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">Urgente</span><span class="f-badge f-pri">Alta prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Cobrar Anderson — análise orçado vs realizado com quebras (apresentar fim de semana 25/04)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">25/04</span><span class="f-badge f-pri">Alta prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Cobrar Bruno — agenda análise técnica MGM V3 com Andressa (até sexta 25/04)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">25/04</span><span class="f-badge f-pri">Alta prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Cobrar Maurício — confirmar IA Criativos rodando em 24/04 (economia R$74K/ano)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">24/04</span><span class="f-badge f-pri">Alta prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Cobrar Ana — dados campanha topo funil para segunda-feira (28/04)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">28/04</span><span class="f-badge f-pri">Média prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Acompanhar reunião CX — estrutura coordenadores dedicados retenção (amanhã 23/04)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">23/04</span><span class="f-badge f-pri">Alta prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Minuta padrão de parcerias — processo atual de 6 meses é inviável para escala</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">Mai</span><span class="f-badge f-pri">Média prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Cobrar Matheus — validação base NPS com Anderson / José Paulo (sem 28/04)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">Sem 28/04</span><span class="f-badge f-pri">Média prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Cobrar RH — vagas Fields BH e Fortaleza (dificuldade contratação, impacta operação)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">Urgente</span><span class="f-badge f-pri">Alta prioridade</span></div>
+            </div>
+
+            <div class="f-task"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Registrar oportunidades de eventos para orçamento 2027 (COB, patrocínios, parcerias)</div>
+              <div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">Jun</span><span class="f-badge f-pri">Média prioridade</span></div>
+            </div>
+
+            <button class="add-f-btn" onclick="addFTask('f-pending')">+ Adicionar tarefa</button>
+          </div>
+
+          <div>
+            <div class="ferraz-col-title ferraz-done-title">✅ Concluído / Confirmado na reunião</div>
+
+            <div class="f-task f-done"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Diretriz "Agilidade obrigatória" comunicada — uso de IA, não aceitar "falta de tempo"</div>
+              <div class="f-task-meta"><span class="f-badge f-done-badge">✅ Comunicado 22/04</span></div>
+            </div>
+
+            <div class="f-task f-done"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Modelo eventos com ROI comunicado — unidade se compromete com meta ou evento não aprovado</div>
+              <div class="f-task-meta"><span class="f-badge f-done-badge">✅ Comunicado 22/04</span></div>
+            </div>
+
+            <div class="f-task f-done"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">MGM: mantida regra rígida de match indicador→indicado (não abrir exceções)</div>
+              <div class="f-task-meta"><span class="f-badge f-done-badge">✅ Decisão tomada</span></div>
+            </div>
+
+            <div class="f-task f-done"><div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div>
+              <div class="f-task-title" contenteditable="true">Foco nos 20% de crescimento VGV — cobrado e reforçado como prioridade máxima</div>
+              <div class="f-task-meta"><span class="f-badge f-done-badge">✅ Reforçado 22/04</span></div>
+            </div>
+
+            <button class="add-f-btn" onclick="addFTask('f-done-list')">+ Adicionar tarefa</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pa-section">
+      <div class="pa-header-row"><div class="section-label" style="margin-bottom:0">Cobranças — Próxima Reunião</div><button class="pa-add-btn" onclick="addPA('ferraz')">+ Nova Cobrança</button></div>
+      <div class="pa-cols">
+        <div class="pa-col"><div class="pa-col-header pending"><div class="pa-col-title"><span class="pa-col-icon">⏳</span>Cobrar na próxima</div><span class="pa-count" id="cnt-ferraz-pending">3</span></div>
+          <div class="pa-body" id="pa-ferraz-pending">
+            <div class="pa-row" data-bu="ferraz"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">MGM V2 Go-Live — foi aprovado? Qual data de ativação?</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Cobrar de</span><span class="pa-meta-val" contenteditable="true">Susana / Ferraz</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">29/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+            <div class="pa-row" data-bu="ferraz"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">IA Criativos — economia confirmada? Quantos cards produzidos? Variações de layout ok?</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Cobrar de</span><span class="pa-meta-val" contenteditable="true">Maurício</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">29/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+            <div class="pa-row" data-bu="ferraz"><div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">CAC +167% Odonto Google — qual foi a causa raiz? Ação implementada?</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Cobrar de</span><span class="pa-meta-val" contenteditable="true">@Squad Odonto</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">29/04</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div></div>
+          </div>
+        </div>
+        <div class="pa-col"><div class="pa-col-header done"><div class="pa-col-title"><span class="pa-col-icon">✅</span>Resolvido</div><span class="pa-count" id="cnt-ferraz-done">0</span></div><div class="pa-body" id="pa-ferraz-done"><div class="pa-empty">Nenhuma cobrança resolvida ainda</div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+var dirty=false;
+function mark(){dirty=true;document.getElementById('save-status').textContent='Alterações não salvas'}
+document.addEventListener('input',mark);
+
+function showBU(id,btn){
+  document.querySelectorAll('.bu-section').forEach(function(s){s.classList.remove('visible')});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+  document.getElementById('bu-'+id).classList.add('visible');
+  btn.classList.add('active');
+}
+
+function addTask(cid,nid){
+  var c=document.getElementById(cid),ab=c.querySelector('.add-task-btn');
+  var d=document.createElement('div');d.className='task-card priority-low';
+  d.innerHTML='<div class="task-actions">'+(nid?'<button class="task-btn" onclick="moveCard(this,\''+nid+'\')">→</button>':'')+'<button class="task-btn" onclick="rmCard(this)">×</button></div><div class="task-title" contenteditable="true">Nova tarefa</div><div class="task-meta"><span class="task-date" contenteditable="true">Data</span><span class="task-owner" contenteditable="true">@Responsável</span></div>';
+  c.insertBefore(d,ab);d.querySelector('.task-title').focus();mark();
+}
+function rmCard(btn){if(confirm('Remover esta tarefa?')){btn.closest('.task-card').remove();mark()}}
+function moveCard(btn,tid){
+  var card=btn.closest('.task-card'),t=document.getElementById(tid);
+  if(!t)return;btn.remove();t.insertBefore(card,t.querySelector('.add-task-btn'));mark();
+}
+
+function addKPI(barId){
+  var bar=document.getElementById(barId);
+  var c=document.createElement('div');c.className='kpi-card';
+  c.innerHTML='<div class="kpi-label" contenteditable="true">Indicador</div><div class="kpi-value" contenteditable="true">—</div><div class="kpi-sub" contenteditable="true">Descrição</div><button class="kpi-rm" onclick="this.closest(\'.kpi-card\').remove();mark()">✕ remover</button>';
+  bar.appendChild(c);mark();
+}
+
+function addPill(btn){
+  var colors=['navy','mustard','green','red'];
+  var p=document.createElement('button');
+  p.className='rm-pill '+colors[Math.floor(Math.random()*4)];
+  p.contentEditable='true';p.textContent='Nova entrega';
+  btn.parentNode.insertBefore(p,btn);p.focus();mark();
+}
+
+function addFTask(colId){
+  var col=document.getElementById(colId)||document.querySelector('.ferraz-cols>div:first-child');
+  var addBtn=col?col.querySelector('.add-f-btn'):null;
+  var d=document.createElement('div');d.className='f-task';
+  d.innerHTML='<div class="task-actions"><button class="task-btn" onclick="rmFTask(this)">×</button></div><div class="f-task-title" contenteditable="true">Nova tarefa</div><div class="f-task-meta"><span class="f-badge f-date" contenteditable="true">Data</span></div>';
+  if(addBtn){col.insertBefore(d,addBtn);}else{d.querySelector('.f-task-title').focus();}
+  d.querySelector('.f-task-title').focus();mark();
+}
+function rmFTask(btn){if(confirm('Remover?')){btn.closest('.f-task').remove();mark()}}
+
+function addPA(bu){
+  var pid='pa-'+bu+'-pending';
+  var c=document.getElementById(pid);
+  if(!c)return;
+  var em=c.querySelector('.pa-empty');if(em)em.remove();
+  var row=document.createElement('div');row.className='pa-row';row.dataset.bu=bu;
+  row.innerHTML='<div class="pa-row-actions"><button class="task-btn" title="Mover" onclick="togglePA(this)">⇄</button><button class="task-btn" onclick="rmPA(this)">×</button></div><div class="pa-row-desc" contenteditable="true">Descreva o compromisso assumido</div><div class="pa-row-meta"><div class="pa-meta-field"><span class="pa-meta-label">Responsável</span><span class="pa-meta-val" contenteditable="true">@Responsável</span></div><div class="pa-meta-field"><span class="pa-meta-label">Prazo</span><span class="pa-meta-val" contenteditable="true">dd/mm</span></div><div class="pa-meta-field"><span class="pa-meta-label">Status</span><select class="pa-status-sel s-pending" onchange="onSelChange(this)"><option value="pending" selected>⏳ Pendente</option><option value="done">✅ Concluído</option></select></div></div>';
+  c.appendChild(row);row.querySelector('.pa-row-desc').focus();refreshCounts(bu);mark();
+}
+
+function onSelChange(sel){
+  var row=sel.closest('.pa-row');
+  var bu=getBU(row);
+  var isDone=sel.value==='done';
+  var targetId='pa-'+bu+'-'+(isDone?'done':'pending');
+  var t=document.getElementById(targetId);
+  var em=t?t.querySelector('.pa-empty'):null;if(em)em.remove();
+  sel.className='pa-status-sel '+(isDone?'s-done':'s-pending');
+  row.classList.toggle('done-row',isDone);
+  if(t)t.appendChild(row);
+  refreshCounts(bu);mark();
+}
+
+function togglePA(btn){
+  var sel=btn.closest('.pa-row').querySelector('.pa-status-sel');
+  sel.value=sel.value==='pending'?'done':'pending';onSelChange(sel);
+}
+
+function rmPA(btn){
+  if(confirm('Remover esta pendência?')){var row=btn.closest('.pa-row');var bu=getBU(row);row.remove();refreshCounts(bu);mark();}
+}
+
+function getBU(row){
+  var s=row.closest('.bu-section');return s?s.id.replace('bu-',''):'';
+}
+
+function refreshCounts(bu){
+  ['pending','done'].forEach(function(s){
+    var body=document.getElementById('pa-'+bu+'-'+s);
+    if(!body)return;
+    var n=body.querySelectorAll('.pa-row').length;
+    var cntEl=document.getElementById('cnt-'+bu+'-'+s);
+    if(cntEl)cntEl.textContent=n;
+    if(n===0&&!body.querySelector('.pa-empty')){
+      var e=document.createElement('div');e.className='pa-empty';
+      e.textContent=s==='pending'?'Nenhuma pendência registrada':'Nenhum item concluído ainda';
+      body.appendChild(e);
+    }
+  });
+}
+
+function saveHTML(){
+  var html='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='dashboard_pdca_marketing_'+new Date().toISOString().slice(0,10)+'.html';
+  a.click();URL.revokeObjectURL(a.href);
+  dirty=false;
+  document.getElementById('save-status').textContent='Salvo às '+new Date().toLocaleTimeString('pt-BR');
+}
+window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
+</script>
+</body>
+</html>
