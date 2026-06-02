@@ -172,6 +172,33 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
 .add-f-btn{width:100%;padding:7px;border:1.5px dashed rgba(124,58,237,.3);background:none;border-radius:7px;font-size:11px;color:#7C3AED;cursor:pointer;text-align:center;font-family:inherit;margin-top:4px}
 .add-f-btn:hover{border-color:#7C3AED;background:#F5F3FF}
 
+/* RESUMO DA REUNIÃO */
+.resumo-card{background:var(--white);border:.5px solid var(--border);border-radius:11px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:24px}
+.resumo-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.resumo-field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+.resumo-field-full{grid-column:1 / -1}
+.resumo-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--navy)}
+.resumo-input{font-family:inherit;font-size:13px;color:var(--text-dark);background:var(--gray-bg);border:1px solid var(--border);border-radius:10px;padding:12px;outline:none;transition:all .15s}
+.resumo-input:focus{background:var(--white);border-color:var(--mustard);box-shadow:0 0 0 2px var(--mustard-bg)}
+.resumo-textarea{font-family:inherit;font-size:13px;color:var(--text-dark);background:var(--gray-bg);border:1px solid var(--border);border-radius:10px;padding:12px;outline:none;min-height:350px;resize:vertical;line-height:1.5;transition:all .15s;width:100%}
+.resumo-textarea:focus{background:var(--white);border-color:var(--mustard);box-shadow:0 0 0 2px var(--mustard-bg)}
+.resumo-actions{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
+.resumo-save-btn{padding:10px 22px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.resumo-save-btn:hover{background:var(--navy-l)}
+.resumo-status{font-size:12px;color:var(--text-muted);font-weight:600}
+.resumo-new-btn{padding:10px 22px;background:var(--white);color:var(--navy);border:1.5px solid var(--navy);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
+.resumo-new-btn:hover{background:var(--navy);color:#fff}
+.resumo-hist-section{background:var(--white);border:.5px solid var(--border);border-radius:11px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.05);margin-bottom:24px}
+.resumo-hist-header{font-size:12px;font-weight:800;color:var(--navy);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px;padding-bottom:7px;border-bottom:2px solid var(--mustard);display:inline-block}
+.resumo-hist-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.resumo-hist-card{background:var(--gray-bg);border:1px solid var(--border);border-left:3px solid var(--mustard);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;text-align:left;font-family:inherit}
+.resumo-hist-card:hover{background:var(--mustard-bg);border-left-color:var(--navy);box-shadow:0 2px 8px rgba(0,0,0,.09)}
+.resumo-hist-card.active{background:var(--mustard-bg);border-left-color:var(--navy)}
+.resumo-hist-card-title{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.resumo-hist-card-sub{font-size:11px;color:var(--text-muted);font-weight:600;line-height:1.4}
+.resumo-hist-empty{font-size:12px;color:var(--text-muted);opacity:.6;padding:16px 0}
+@media(max-width:650px){.resumo-grid{grid-template-columns:1fr}.resumo-hist-list{grid-template-columns:1fr}}
+
 @media(max-width:1000px){.pdca-grid{grid-template-columns:1fr 1fr}.roadmap-lanes{grid-template-columns:1fr 1fr}.ferraz-cols{grid-template-columns:1fr}}
 @media(max-width:650px){.pdca-grid{grid-template-columns:1fr}.roadmap-lanes{grid-template-columns:1fr}.pa-cols{grid-template-columns:1fr}.pa-row-meta{grid-template-columns:1fr 1fr}.main{padding:12px}}
 @media print{.top-bar{position:relative}.tabs,.export-bar{display:none}.bu-section{display:block!important;page-break-inside:avoid}.bu-section+.bu-section{page-break-before:always}body{background:#fff}}
@@ -182,10 +209,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
 <div class="top-bar">
   <div>
     <h1 contenteditable="true">Dashboard de Pendências — Liderança de Marketing</h1>
-    <p contenteditable="true">Reunião Semanal · Ciclo PDCA · Atualizado 22/04/2026</p>
+    <p contenteditable="true">Reunião Semanal · Ciclo PDCA · Atualizado 01/06/2026 (fechamento Maio)</p>
   </div>
   <div class="top-bar-right">
-    <span class="badge" contenteditable="true">Semana 22–28/04/2026</span>
+    <span class="badge" contenteditable="true">Semana 25–31/05/2026</span>
   </div>
 </div>
 
@@ -203,6 +230,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     <button class="tab-btn" onclick="showBU('grad',this)">🎓 Graduação</button>
     <button class="tab-btn" onclick="showBU('cross',this)">🔗 Cross-BU</button>
     <button class="tab-btn ferraz-tab" onclick="showBU('ferraz',this)">⚡ Ferraz — To Do</button>
+    <button class="tab-btn" onclick="showBU('resumo',this)">📝 Resumo da Reunião</button>
   </div>
 
   <!-- ══════════════ PÓS MEDICINA ══════════════ -->
@@ -213,11 +241,12 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-med">
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">+14%</div><div class="kpi-sub" contenteditable="true">R$17,8M esperado fech. abr · Meta R$15,5M</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">CAC Abril</div><div class="kpi-value" contenteditable="true">R$3.9K</div><div class="kpi-sub" contenteditable="true">Recuperado — orçado R$4,3K ✅</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Vendas Abril</div><div class="kpi-value" contenteditable="true">106%</div><div class="kpi-sub" contenteditable="true">70 pagos · Meta 66 ✅</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Matrículas vs Meta</div><div class="kpi-value" contenteditable="true">−29%</div><div class="kpi-sub" contenteditable="true">Atraso assinaturas de contrato</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Projeção Anual</div><div class="kpi-value" contenteditable="true">R$65M</div><div class="kpi-sub" contenteditable="true">R$6–7M acima do orçamento</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">+14,9%</div><div class="kpi-sub" contenteditable="true">R$23,3M · Meta R$20,3M · ~R$3M de upside</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita Mês (Maio)</div><div class="kpi-value" contenteditable="true">+14,0%</div><div class="kpi-sub" contenteditable="true">R$5,4M · Meta R$4,8M ✅</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Vendas (VGV Pago)</div><div class="kpi-value" contenteditable="true">+77%</div><div class="kpi-sub" contenteditable="true">129 pagos · R$8,5M · −14% vs desafio</div></div>
+      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">CAC Geral</div><div class="kpi-value" contenteditable="true">R$4.4K</div><div class="kpi-sub" contenteditable="true">+37% vs orçado R$3,2K · −12% WoW</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Evasão Maio / Ativos</div><div class="kpi-value" contenteditable="true">4,1%</div><div class="kpi-sub" contenteditable="true">1.400 ativos · +1,4p.p. vs Abril</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Projeção Anual (ARR)</div><div class="kpi-value" contenteditable="true">R$58M</div><div class="kpi-sub" contenteditable="true">Pode passar de R$65M no ritmo atual</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-med')">+ Novo indicador</button></div>
 
@@ -299,11 +328,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-odonto">
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">−9.7%</div><div class="kpi-sub" contenteditable="true">R$54,4M · Meta R$60,2M</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Topo de Funil</div><div class="kpi-value" contenteditable="true">+25%</div><div class="kpi-sub" contenteditable="true">Inscritos 25% acima da meta ✅</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Pagos vs Meta</div><div class="kpi-value" contenteditable="true">+17%</div><div class="kpi-sub" contenteditable="true">312 pagos · 40% vs ano anterior</div></div>
-      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">CAC Geral</div><div class="kpi-value" contenteditable="true">R$8.3K</div><div class="kpi-sub" contenteditable="true">+167% MoM Google — crítico</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Alunos Ativos / Evasão</div><div class="kpi-value" contenteditable="true">8.381</div><div class="kpi-sub" contenteditable="true">0,9% cancel. · 78 solicit. mês</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">−9,3%</div><div class="kpi-sub" contenteditable="true">R$68,9M · Meta R$76M · +9,3% YoY</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita Mês (Forecast)</div><div class="kpi-value" contenteditable="true">−12,4%</div><div class="kpi-sub" contenteditable="true">R$13,8M · Meta R$15,8M · +7% YoY</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">CAC vs Abril</div><div class="kpi-value" contenteditable="true">−12,4%</div><div class="kpi-sub" contenteditable="true">CPL R$7,99 · −40% YoY ✅</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Conversão Funil</div><div class="kpi-value" contenteditable="true">−1,5p.p.</div><div class="kpi-sub" contenteditable="true">Inflada por SBV/Workshop · 3 consultores a menos</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Evasão / Ativos</div><div class="kpi-value" contenteditable="true">1,6%</div><div class="kpi-sub" contenteditable="true">8.212 ativos · Retenção 6,8% (melhor do ano)</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-odonto')">+ Novo indicador</button></div>
 
@@ -387,11 +416,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-grad">
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">−0.9%</div><div class="kpi-sub" contenteditable="true">Evasão 4x acima do orçado impacta</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Conv. Inscr→Pago</div><div class="kpi-value" contenteditable="true">5%</div><div class="kpi-sub" contenteditable="true">Melhora de 3,4% → 5% ✅ +47%</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Pagos Semana</div><div class="kpi-value" contenteditable="true">+44</div><div class="kpi-sub" contenteditable="true">22 Araras→Limeira + 22 orgânicos</div></div>
-      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">Evasão Medicina</div><div class="kpi-value" contenteditable="true">1.70%</div><div class="kpi-sub" contenteditable="true">vs 0,47% orçado — 4x maior</div></div>
-      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">Gap Receita (Araras+Campinas)</div><div class="kpi-value" contenteditable="true">−R$7.3M</div><div class="kpi-sub" contenteditable="true">Turmas não abertas (MEC)</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD Medicina vs Meta</div><div class="kpi-value" contenteditable="true">−1,2%</div><div class="kpi-sub" contenteditable="true">R$180,8M · Meta R$183M · +15,4% YoY</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Pagos na Semana</div><div class="kpi-value" contenteditable="true">+76</div><div class="kpi-sub" contenteditable="true">Maior volume histórico do ciclo 26.2</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Pagos vs Meta (Inscr.)</div><div class="kpi-value" contenteditable="true">342</div><div class="kpi-sub" contenteditable="true">Limeira 222/290 (77%) · Sertão 120/355 (34%)</div></div>
+      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">Matriculados</div><div class="kpi-value" contenteditable="true">0</div><div class="kpi-sub" contenteditable="true">Limeira 0/35 · Sertão 0/55 · em Junho/26</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Funil — Leads</div><div class="kpi-value" contenteditable="true">14.295</div><div class="kpi-sub" contenteditable="true">5.033 inscritos · Lead→Inscr. 35,2%</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-grad')">+ Novo indicador</button></div>
 
@@ -476,10 +505,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-cross">
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CRM HubSpot</div><div class="kpi-value" contenteditable="true">30%</div><div class="kpi-sub" contenteditable="true">↑ de 20% — próximo marco 24/04</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CDP / GA4 / GTM</div><div class="kpi-value" contenteditable="true">40%</div><div class="kpi-sub" contenteditable="true">Em andamento — data quality e KPIs</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V2 Pós Médica</div><div class="kpi-value" contenteditable="true">90%</div><div class="kpi-sub" contenteditable="true">Travado — aguarda Susana</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V3 (BeeViral)</div><div class="kpi-value" contenteditable="true">10%</div><div class="kpi-sub" contenteditable="true">Andressa agenda análise até sexta</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CRM HubSpot</div><div class="kpi-value" contenteditable="true">Em and.</div><div class="kpi-sub" contenteditable="true">Pipelines definidos 28/05 · jornadas mapeadas</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CDP / GA4 / GTM</div><div class="kpi-value" contenteditable="true">40%</div><div class="kpi-sub" contenteditable="true">Métrica Boss · início implantação 01/06</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V2 Pós Médica</div><div class="kpi-value" contenteditable="true">90%</div><div class="kpi-sub" contenteditable="true">Zendesk · pendente financeiro p/ Go-live</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V3 (BeeViral)</div><div class="kpi-value" contenteditable="true">10%</div><div class="kpi-sub" contenteditable="true">Em fase de análise comercial</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-cross')">+ Novo indicador</button></div>
 
@@ -665,6 +694,107 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
   </div>
 
+  <!-- ══════════════ RESUMO DA REUNIÃO ══════════════ -->
+  <div class="bu-section" id="bu-resumo">
+    <div class="section-header">
+      <h2 contenteditable="true">Resumo da Reunião</h2>
+      <span class="sec-sub" contenteditable="true">Registro Executivo da Reunião Semanal</span>
+    </div>
+
+    <div class="resumo-card">
+      <div class="resumo-grid">
+        <div class="resumo-field">
+          <label class="resumo-label" for="resumo-data">Data da reunião</label>
+          <input type="text" id="resumo-data" class="resumo-input" value="01/06/2026" oninput="salvarResumoLocal()">
+        </div>
+        <div class="resumo-field">
+          <label class="resumo-label" for="resumo-semana">Semana</label>
+          <input type="text" id="resumo-semana" class="resumo-input" value="Semana 23 · 25–31/05/2026 (fechamento Maio)" oninput="salvarResumoLocal()">
+        </div>
+        <div class="resumo-field resumo-field-full">
+          <label class="resumo-label" for="resumo-participantes">Participantes</label>
+          <input type="text" id="resumo-participantes" class="resumo-input" value="Livia Oliveira, Matheus Santos, Anna Beatriz Karas, Michele Braatz, Mariana Leite (+ Ferraz — assíncrono)" oninput="salvarResumoLocal()">
+        </div>
+      </div>
+
+      <div class="resumo-field resumo-field-full">
+        <label class="resumo-label" for="resumo-ata">Ata completa</label>
+        <textarea id="resumo-ata" class="resumo-textarea" placeholder="Cole aqui toda a ata da reunião..." oninput="salvarResumoLocal()">RESUMO EXECUTIVO — REUNIÃO SEMANAL DE LIDERANÇA DE MARKETING
+Data: 01/06/2026 · Report de fechamento de Maio/2026 · Duração: ~2h30
+
+==================================================
+1. PÓS ODONTO (UN 1)
+==================================================
+- Receita YTD: R$68,9M, 9% acima de 2025, porém 9,3% abaixo da meta (R$76M). No mês: R$13,8M (forecast/faturado), ~12,4% abaixo da meta (R$15,8M), mas ~7% acima do ano anterior.
+- Captação/Funil: crescimento de leads e VGV inscrito vs 2025, abaixo do projetado. Conversão "inflada" por SBV/Workshop, ~1,5 p.p. abaixo do projetado. 3 consultores a menos que em 2025; leads sem senso de urgência.
+- Custos: CPL R$7,99 acima do projetado, mas ~12% menor MoM e ~40% menor YoY. CAC 12,4% abaixo de Abril. Investimento ~R$30k abaixo do projetado.
+- Redes sociais: engajamento 0,88% (benchmark 2–3%); campanha de lançamento do 2º semestre estruturada (social, e-mail e WhatsApp).
+- Evasão/Retenção: cancelamento 1,6% (igual a Abril); 8.212 alunos ativos; retenção 6,8% — melhor taxa do ano. 157 alunos em risco. Fortaleza e SP lideram solicitações; 9 retenções em Maio.
+- Odonto Experience (BSB e FOR, Maio): 92 inscrições, 59 presentes, ~90% intenção de matrícula, 1 venda (Mestrado de Prótese ~R$64,3K). Avaliação geral 95% excelente.
+
+==================================================
+2. PÓS MEDICINA (UN 2)
+==================================================
+- Receita YTD: R$23,3M vs R$20,3M orçado (+14,9%; ~R$3M de upside). Mês de Maio: R$5,4M vs R$4,8M (+14,0%), ~R$600K acima do orçado.
+- Projeção: ~R$58M de ARR só com a base atual; mantido o ritmo, pode passar de R$65M no ano. Plano "desafio dos R$70MM" fechado para Diretoria/sócios (29/05).
+- Captação/Vendas: 3.672 leads, 129 pagos, 54 matriculados (Lead→Pago 3,5%; Pago→Matr. 70%). VGV pago R$8,5M (-14% vs meta, +122% YoY); matriculado R$7,3M (-16% vs meta). Vendas ~13% abaixo do desafio, mas 77% acima do orçado.
+- Custos: CAC geral R$4,4K, 37% acima do orçado (R$3,2K); -12% semana contra semana (5K → 4,3K). Sazonalidade de Maio não mapeada no orçamento. Iniciativas de novos funis de ISCA (Simulado Residência 05/06, Cálculo de Remuneração 15/06), teste de LPs com IA, MGM com operações/docentes e BLOG Mandic com TI.
+- GTM Nutrologia concluído; Neuropediatria em régua/ativação; criar GTM TOP 3 (Dermato, Endocrino, Psiquiatria). Criativos Nutrologia: R$11.018 investidos, 55 conversões, 863k impressões (12% da conta no mês).
+- Evasão: 4,1% em Maio (+1,4 p.p. vs Abril); 1.400 ativos; maior mês de solicitações de cancelamento de alunos cursando (32). Migração 100% Zendesk validada.
+- Captação de Pacientes (Clínica): Maio foi o maior volume de agendamentos, 1º mês a romper 3K pacientes; maior faturamento da clínica no ano. No-show subiu para 26,5% (+7 p.p. MoM); capacity estável em 63,9%. Retomada de procedimentos estéticos (botox/preenchimento): receita bruta R$73,2K.
+- Fields/MGM PGMed (ativação 23/04–30/05, concluída): 56 indicações, 3 negociações, 7 conversões, 5 cursos. Total geral R$727.891,45 (Dermato CPS R$577,5K; Dermato DF R$110,4K; Tricologia CPS R$40K).
+
+==================================================
+3. GRADUAÇÃO (UN 3)
+==================================================
+- Receita YTD Medicina (consolidado): R$180,8M vs R$183M meta (-1,2%); +15,4% vs ano anterior. Mês: R$35,3M vs R$36,4M (-3,0%). Gap de 1,2% vs meta YTD ainda não recuperado.
+- Funil ciclo 26.2: 14.295 leads, 5.033 inscritos, 342 pagos, 0 matriculados (matrículas em Junho/26). Limeira 222/290 (77%); Sertão 120/355 (34%). +76 pagos na semana (maior volume histórico do ciclo).
+- Campanhas: reta final dobrou os pagos e cortou custo por pago (-35% Mandic; -60% FMS). Maio com 55% mais pagos que Abril.
+- OOH / Search Lift: efeito positivo em busca genérica (Mandic +19,6 p.p.; FMS +72,6 p.p.). Tráfego orgânico das páginas de curso cresceu (Mandic +49% views; FMS +110% views) com queda de rejeição → tráfego mais qualificado. Correlação, não causalidade.
+- Fields: MGM unificado (início 29/04) com 8 inscrições, 3 pagos; Blitz Limeira (201 leads) e FMS (68 leads) concluídas.
+
+==================================================
+4. PAUTAS MÓVEIS / CROSS-BU
+==================================================
+- Nível de Serviço (Op. Adm): SLAs majoritariamente dentro da meta; pontos de atenção em tempo de 1ª resposta em algumas frentes. Termo de Adesão Stricto Sensu em atraso (nova data 09/06).
+- CRM HubSpot: em andamento — mapeamento de jornadas, consolidação de usuários/perfis, pipelines definidos (28/05).
+- CDP/GA4/GTM: ~40%; parceiro Métrica Boss; início da implantação 01/06.
+- MGM V2 (Pós Médica, Zendesk): 90%, processo estruturado, pendente definição do financeiro para Go-live. MGM V3 (BeeViral): 10%, em análise comercial.
+- NPS 26.1 & ENAMED: fechamento realizado; Close the Loop em andamento; planos de ação por unidade (prazos 12/06). Substituição do INDECX em validação.
+- Inteligência Competitiva: concorrentes diretos com datas na "Semana da Mandic" (Claretiano, Faculdade de Belo Jardim); Afya com ecossistema como argumento de venda e antecipação de Black Friday (até 40% off).
+
+==================================================
+5. PONTOS OPERACIONAIS DISCUTIDOS (transcrição)
+==================================================
+- No-show / agendamentos: primeiro teste de integração com o Consulta Já deu certo; objetivo de eliminar o gargalo de subir ~1.000 agendamentos/mês manualmente (~2.000 min/semana). Próximo passo: automações de consulta com agenda espelhada 1:1 entre a base e o Consulta Já, garantindo disparos de no-show efetivos.
+- WhatsApp / utilidade: na Pós Odonto, de 3 modelos subidos, 1 passou como utilidade e 2 voltaram; na Pós Médica, modelo de confirmação de turma online passou como utilidade. Acompanhar quality rating da conta (comunicação transacional não deve pesar).
+- Agendamentos Junho: subiram de 1.600 para 2.100 na semana (mais de 500 agendamentos dentro de Junho).
+- Ação social "chocolate"/indicação: gerou barulho positivo em redes sociais; venda de aparelho em DF + caso em Lima (~R$727K). Avaliação: medição prejudicada — não dá para isolar o lift de indicação (formulário não parametrizado/UTM faltando). Aprendizado para repetir a ação com link parametrizado.
+
+==================================================
+6. DECISÕES E PRÓXIMOS PASSOS
+==================================================
+- Formato da reunião: avaliar ajuste de frequência (possível cadência mensal, com encontro mais longo/completo). Mariana levará a discussão ao Ferraz; alinhamento na quinta. Sugestões a circular de forma assíncrona durante a semana.
+- Ferraz não participa do report ao vivo → enviar import/resumo assíncrono (este registro atende a esse fluxo).
+- Manter foco em automações de agendamento (integração Supabase × Consulta Já, prazo 08/06) e automações de confirmação para reduzir no-show (15/06).
+- Próxima reunião retoma a partir dos pontos de hoje.</textarea>
+      </div>
+
+      <div class="resumo-actions">
+        <button class="resumo-save-btn" onclick="salvarResumo()">💾 Salvar Resumo</button>
+        <button class="resumo-new-btn" onclick="novaReuniao()">➕ Nova Reunião</button>
+        <span id="resumo-status" class="resumo-status"></span>
+      </div>
+    </div>
+
+    <div class="resumo-hist-section">
+      <div class="resumo-hist-header">📚 Histórico de Reuniões</div>
+      <div id="resumo-hist-list" class="resumo-hist-list">
+        <div class="resumo-hist-empty">Nenhuma reunião carregada ainda.</div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -778,6 +908,155 @@ function saveHTML(){
   document.getElementById('save-status').textContent='Salvo às '+new Date().toLocaleTimeString('pt-BR');
 }
 window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
+
+/* ══════════════ RESUMO DA REUNIÃO ══════════════ */
+const API_URL = "https://script.google.com/macros/s/AKfycbwl4BRT-3ozFQLI_Xv0pDdMUazMEdHoMjnQp59JZ9guzflyoKaQmKk7vKWTCZ4hoE3zbw/exec";
+const RESUMO_LS_KEY = "dashboard_pdca_resumo";
+
+function salvarResumoLocal(){
+  try{
+    var dados={
+      data:document.getElementById('resumo-data').value,
+      semana:document.getElementById('resumo-semana').value,
+      participantes:document.getElementById('resumo-participantes').value,
+      ata:document.getElementById('resumo-ata').value
+    };
+    localStorage.setItem(RESUMO_LS_KEY,JSON.stringify(dados));
+  }catch(e){console.warn('Falha ao salvar resumo localmente',e);}
+}
+
+function carregarResumoLocal(){
+  try{
+    var raw=localStorage.getItem(RESUMO_LS_KEY);
+    if(!raw)return;
+    var dados=JSON.parse(raw);
+    if(dados.data!==undefined&&dados.data!=="")document.getElementById('resumo-data').value=dados.data;
+    if(dados.semana!==undefined)document.getElementById('resumo-semana').value=dados.semana;
+    if(dados.participantes!==undefined)document.getElementById('resumo-participantes').value=dados.participantes;
+    if(dados.ata!==undefined)document.getElementById('resumo-ata').value=dados.ata;
+  }catch(e){console.warn('Falha ao carregar resumo local',e);}
+}
+
+async function salvarResumo(){
+  var data=document.getElementById('resumo-data').value;
+  var semana=document.getElementById('resumo-semana').value;
+  var participantes=document.getElementById('resumo-participantes').value;
+  var ata=document.getElementById('resumo-ata').value;
+  var statusEl=document.getElementById('resumo-status');
+  var payload={data:data,semana:semana,participantes:participantes,ata:ata};
+
+  salvarResumoLocal();
+  if(statusEl)statusEl.textContent='Enviando...';
+
+  try{
+    var formData=new URLSearchParams();
+    formData.append('data',data);
+    formData.append('semana',semana);
+    formData.append('participantes',participantes);
+    formData.append('ata',ata);
+    await fetch(API_URL,{
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"application/x-www-form-urlencoded"},
+      body:formData.toString()
+    });
+    var hora=new Date().toLocaleTimeString('pt-BR');
+    alert('Resumo salvo com sucesso.');
+    if(statusEl)statusEl.textContent='Resumo salvo às '+hora;
+    document.getElementById('save-status').textContent='Resumo salvo às '+hora;
+  }catch(e){
+    console.error('Erro ao salvar resumo',e);
+    if(statusEl)statusEl.textContent='Erro ao enviar — dados mantidos localmente.';
+    alert('Não foi possível enviar o resumo agora. Os dados foram mantidos localmente.');
+  }
+}
+
+async function carregarResumoGoogle(){
+  try{
+    var resp=await fetch(API_URL,{method:"GET"});
+    var json=await resp.json();
+    if(!json||!json.ultimoResumo)return;
+    var u=json.ultimoResumo;
+    if(u.data!==undefined&&u.data!==null)document.getElementById('resumo-data').value=u.data;
+    if(u.semana!==undefined&&u.semana!==null)document.getElementById('resumo-semana').value=u.semana;
+    if(u.participantes!==undefined&&u.participantes!==null)document.getElementById('resumo-participantes').value=u.participantes;
+    if(u.ata!==undefined&&u.ata!==null)document.getElementById('resumo-ata').value=u.ata;
+    salvarResumoLocal();
+  }catch(e){
+    console.error('Erro ao carregar resumo do Google Sheets',e);
+  }
+}
+
+function novaReuniao(){
+  document.getElementById('resumo-data').value='';
+  document.getElementById('resumo-semana').value='';
+  document.getElementById('resumo-participantes').value='';
+  document.getElementById('resumo-ata').value='';
+  document.querySelectorAll('.resumo-hist-card.active').forEach(function(c){c.classList.remove('active');});
+  salvarResumoLocal();
+  document.getElementById('resumo-data').focus();
+}
+
+function preencherResumoCampos(r){
+  if(!r)return;
+  if(r.data!==undefined&&r.data!==null)document.getElementById('resumo-data').value=r.data;
+  if(r.semana!==undefined&&r.semana!==null)document.getElementById('resumo-semana').value=r.semana;
+  if(r.participantes!==undefined&&r.participantes!==null)document.getElementById('resumo-participantes').value=r.participantes;
+  if(r.ata!==undefined&&r.ata!==null)document.getElementById('resumo-ata').value=r.ata;
+  salvarResumoLocal();
+}
+
+async function carregarReuniaoPorId(id,cardEl){
+  try{
+    var resp=await fetch(API_URL+(API_URL.indexOf('?')>-1?'&':'?')+'id='+encodeURIComponent(id),{method:"GET"});
+    var json=await resp.json();
+    var r=(json&&json.ultimoResumo)?json.ultimoResumo:(json&&json.resumo?json.resumo:json);
+    preencherResumoCampos(r);
+    document.querySelectorAll('.resumo-hist-card.active').forEach(function(c){c.classList.remove('active');});
+    if(cardEl)cardEl.classList.add('active');
+    var statusEl=document.getElementById('resumo-status');
+    if(statusEl)statusEl.textContent='Reunião '+(r&&r.data?r.data:id)+' carregada.';
+  }catch(e){
+    console.error('Erro ao carregar reunião do histórico',e);
+  }
+}
+
+function renderHistorico(historico){
+  var list=document.getElementById('resumo-hist-list');
+  if(!list)return;
+  list.innerHTML='';
+  if(!historico||!historico.length){
+    var em=document.createElement('div');em.className='resumo-hist-empty';
+    em.textContent='Nenhuma reunião no histórico.';
+    list.appendChild(em);return;
+  }
+  historico.forEach(function(item){
+    var card=document.createElement('button');
+    card.className='resumo-hist-card';
+    card.type='button';
+    card.innerHTML='<div class="resumo-hist-card-title">'+(item.data||'—')+' - '+(item.semana||'—')+'</div>'+
+                   '<div class="resumo-hist-card-sub">Participantes: '+(item.participantes||'—')+'</div>';
+    card.onclick=function(){carregarReuniaoPorId(item.id,card);};
+    list.appendChild(card);
+  });
+}
+
+async function carregarHistoricoGoogle(){
+  try{
+    var resp=await fetch(API_URL,{method:"GET"});
+    var json=await resp.json();
+    if(!json)return;
+    renderHistorico(json.historico||[]);
+  }catch(e){
+    console.error('Erro ao carregar histórico do Google Sheets',e);
+  }
+}
+
+window.addEventListener("load",async function(){
+  carregarResumoLocal();
+  await carregarResumoGoogle();
+  await carregarHistoricoGoogle();
+});
 </script>
 </body>
 </html>
