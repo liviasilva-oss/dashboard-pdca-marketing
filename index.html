@@ -180,7 +180,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
 .resumo-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:var(--navy)}
 .resumo-input{font-family:inherit;font-size:13px;color:var(--text-dark);background:var(--gray-bg);border:1px solid var(--border);border-radius:10px;padding:12px;outline:none;transition:all .15s}
 .resumo-input:focus{background:var(--white);border-color:var(--mustard);box-shadow:0 0 0 2px var(--mustard-bg)}
-.resumo-textarea{font-family:inherit;font-size:13px;color:var(--text-dark);background:var(--gray-bg);border:1px solid var(--border);border-radius:10px;padding:12px;outline:none;min-height:350px;resize:vertical;line-height:1.5;transition:all .15s;width:100%}
+.resumo-textarea{font-family:'Consolas','Monaco','Courier New',monospace;font-size:12.5px;color:var(--text-dark);background:var(--gray-bg);border:1px solid var(--border);border-radius:10px;padding:16px;outline:none;min-height:480px;resize:vertical;line-height:1.65;transition:all .15s;width:100%;white-space:pre-wrap;word-wrap:break-word;tab-size:2}
 .resumo-textarea:focus{background:var(--white);border-color:var(--mustard);box-shadow:0 0 0 2px var(--mustard-bg)}
 .resumo-actions{display:flex;align-items:center;gap:14px;margin-top:18px;flex-wrap:wrap}
 .resumo-save-btn{padding:10px 22px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s}
@@ -209,10 +209,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
 <div class="top-bar">
   <div>
     <h1 contenteditable="true">Dashboard de Pendências — Liderança de Marketing</h1>
-    <p contenteditable="true">Reunião Semanal · Ciclo PDCA · Atualizado 01/06/2026 (fechamento Maio)</p>
+    <p contenteditable="true">Reunião Semanal · Ciclo PDCA · Atualizado 08/06/2026 (fechamento Semana 23)</p>
   </div>
   <div class="top-bar-right">
-    <span class="badge" contenteditable="true">Semana 25–31/05/2026</span>
+    <span class="badge" contenteditable="true">Semana 01–08/06/2026</span>
   </div>
 </div>
 
@@ -241,12 +241,12 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-med">
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">+14,9%</div><div class="kpi-sub" contenteditable="true">R$23,3M · Meta R$20,3M · ~R$3M de upside</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita Mês (Maio)</div><div class="kpi-value" contenteditable="true">+14,0%</div><div class="kpi-sub" contenteditable="true">R$5,4M · Meta R$4,8M ✅</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Vendas (VGV Pago)</div><div class="kpi-value" contenteditable="true">+77%</div><div class="kpi-sub" contenteditable="true">129 pagos · R$8,5M · −14% vs desafio</div></div>
-      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">CAC Geral</div><div class="kpi-value" contenteditable="true">R$4.4K</div><div class="kpi-sub" contenteditable="true">+37% vs orçado R$3,2K · −12% WoW</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Evasão Maio / Ativos</div><div class="kpi-value" contenteditable="true">4,1%</div><div class="kpi-sub" contenteditable="true">1.400 ativos · +1,4p.p. vs Abril</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Projeção Anual (ARR)</div><div class="kpi-value" contenteditable="true">R$58M</div><div class="kpi-sub" contenteditable="true">Pode passar de R$65M no ritmo atual</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">+14,9%</div><div class="kpi-sub" contenteditable="true">R$23,3M · Meta R$20,3M · +308,8% YoY</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Receita Mês Maio (Forecast)</div><div class="kpi-value" contenteditable="true">+14,0%</div><div class="kpi-sub" contenteditable="true">R$5,4M · Meta R$4,8M · +253% YoY ✅</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Vendas Junho S1 vs Meta</div><div class="kpi-value" contenteditable="true">87,5%</div><div class="kpi-sub" contenteditable="true">14 vendas · Meta 16 · VGV mix baixo (Psiq. R$59K / Online R$32K)</div></div>
+      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">CAC Geral</div><div class="kpi-value" contenteditable="true">R$4.4K</div><div class="kpi-sub" contenteditable="true">+37% vs orçado R$3,2K · −12% WoW (5K→4,3K)</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Evasão Junho (até 05/06)</div><div class="kpi-value" contenteditable="true">1,5%</div><div class="kpi-sub" contenteditable="true">1.374 ativos · 62 em risco · Projeção mês 3,2%</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Projeção Anual (ARR)</div><div class="kpi-value" contenteditable="true">R$58M+</div><div class="kpi-sub" contenteditable="true">Pode passar R$65M · Desafio R$70MM em execução</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-med')">+ Novo indicador</button></div>
 
@@ -328,11 +328,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-odonto">
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">−9,3%</div><div class="kpi-sub" contenteditable="true">R$68,9M · Meta R$76M · +9,3% YoY</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita Mês (Forecast)</div><div class="kpi-value" contenteditable="true">−12,4%</div><div class="kpi-sub" contenteditable="true">R$13,8M · Meta R$15,8M · +7% YoY</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">CAC vs Abril</div><div class="kpi-value" contenteditable="true">−12,4%</div><div class="kpi-sub" contenteditable="true">CPL R$7,99 · −40% YoY ✅</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Conversão Funil</div><div class="kpi-value" contenteditable="true">−1,5p.p.</div><div class="kpi-sub" contenteditable="true">Inflada por SBV/Workshop · 3 consultores a menos</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Evasão / Ativos</div><div class="kpi-value" contenteditable="true">1,6%</div><div class="kpi-sub" contenteditable="true">8.212 ativos · Retenção 6,8% (melhor do ano)</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD vs Meta</div><div class="kpi-value" contenteditable="true">−9,6%</div><div class="kpi-sub" contenteditable="true">R$82,7M · Meta R$91,5M · +14,2% YoY</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita Mês (Forecast)</div><div class="kpi-value" contenteditable="true">−9,3%</div><div class="kpi-sub" contenteditable="true">R$14M · Meta R$15,5M · +7,6% YoY</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita Mês (Faturado)</div><div class="kpi-value" contenteditable="true">−10,9%</div><div class="kpi-sub" contenteditable="true">R$13,8M · Meta R$15,5M · +5,7% YoY</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">CAC vs Abril</div><div class="kpi-value" contenteditable="true">−12,4%</div><div class="kpi-sub" contenteditable="true">CPL R$7,99 · −40% YoY · Invest. −30k vs projetado</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Evasão / Ativos (até 05/06)</div><div class="kpi-value" contenteditable="true">0,2%</div><div class="kpi-sub" contenteditable="true">7.888 ativos · 145 em risco · Retenção 0% no mês</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-odonto')">+ Novo indicador</button></div>
 
@@ -416,11 +416,11 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-grad">
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Receita YTD Medicina vs Meta</div><div class="kpi-value" contenteditable="true">−1,2%</div><div class="kpi-sub" contenteditable="true">R$180,8M · Meta R$183M · +15,4% YoY</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Pagos na Semana</div><div class="kpi-value" contenteditable="true">+76</div><div class="kpi-sub" contenteditable="true">Maior volume histórico do ciclo 26.2</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Pagos vs Meta (Inscr.)</div><div class="kpi-value" contenteditable="true">342</div><div class="kpi-sub" contenteditable="true">Limeira 222/290 (77%) · Sertão 120/355 (34%)</div></div>
-      <div class="kpi-card danger"><div class="kpi-label" contenteditable="true">Matriculados</div><div class="kpi-value" contenteditable="true">0</div><div class="kpi-sub" contenteditable="true">Limeira 0/35 · Sertão 0/55 · em Junho/26</div></div>
-      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Funil — Leads</div><div class="kpi-value" contenteditable="true">14.295</div><div class="kpi-sub" contenteditable="true">5.033 inscritos · Lead→Inscr. 35,2%</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Presença Vestibular 26.2A</div><div class="kpi-value" contenteditable="true">72,4%</div><div class="kpi-sub" contenteditable="true">Limeira −10,6p.p. (base quase dobrada) · Arcoverde +1,5p.p.</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">1ª Chamada Convocados</div><div class="kpi-value" contenteditable="true">85</div><div class="kpi-sub" contenteditable="true">50 Arcoverde + 35 Limeira · Vestibular B: 11/06</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">Pipeline Vestibular B</div><div class="kpi-value" contenteditable="true">132</div><div class="kpi-sub" contenteditable="true">Com isenção de taxa · 41 Arcoverde + 91 Limeira</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Fields — Total de Ações</div><div class="kpi-value" contenteditable="true">38</div><div class="kpi-sub" contenteditable="true">Jan→08/06: 8 visitas + 15 feiras (Campinas) + FMS/Araras/Limeira</div></div>
+      <div class="kpi-card ok"><div class="kpi-label" contenteditable="true">Social — Collab Gazeta</div><div class="kpi-value" contenteditable="true">10,5K</div><div class="kpi-sub" contenteditable="true">+517,6% vs post anterior · Engaj. 2,52% (benchmark 2–3%)</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-grad')">+ Novo indicador</button></div>
 
@@ -505,10 +505,10 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
     </div>
 
     <div class="kpi-bar" id="kpi-cross">
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CRM HubSpot</div><div class="kpi-value" contenteditable="true">Em and.</div><div class="kpi-sub" contenteditable="true">Pipelines definidos 28/05 · jornadas mapeadas</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CDP / GA4 / GTM</div><div class="kpi-value" contenteditable="true">40%</div><div class="kpi-sub" contenteditable="true">Métrica Boss · início implantação 01/06</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V2 Pós Médica</div><div class="kpi-value" contenteditable="true">90%</div><div class="kpi-sub" contenteditable="true">Zendesk · pendente financeiro p/ Go-live</div></div>
-      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V3 (BeeViral)</div><div class="kpi-value" contenteditable="true">10%</div><div class="kpi-sub" contenteditable="true">Em fase de análise comercial</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CRM HubSpot</div><div class="kpi-value" contenteditable="true">45%</div><div class="kpi-sub" contenteditable="true">20% config. concluída · Domínio 12/06 · Pipelines 11/06</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">CDP / GA4 / GTM</div><div class="kpi-value" contenteditable="true">40%</div><div class="kpi-sub" contenteditable="true">GTM reconstrução do zero · Novos containers 16/06</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V2 Pós Médica</div><div class="kpi-value" contenteditable="true">90%</div><div class="kpi-sub" contenteditable="true">Zendesk · Pendente financeiro p/ Go-live</div></div>
+      <div class="kpi-card warn"><div class="kpi-label" contenteditable="true">MGM V3 (BeeViral)</div><div class="kpi-value" contenteditable="true">10%</div><div class="kpi-sub" contenteditable="true">Em análise comercial</div></div>
     </div>
     <div class="kpi-actions-bar"><button class="kpi-add-btn" onclick="addKPI('kpi-cross')">+ Novo indicador</button></div>
 
@@ -705,79 +705,107 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#EEF0F
       <div class="resumo-grid">
         <div class="resumo-field">
           <label class="resumo-label" for="resumo-data">Data da reunião</label>
-          <input type="text" id="resumo-data" class="resumo-input" value="01/06/2026" oninput="salvarResumoLocal()">
+          <input type="text" id="resumo-data" class="resumo-input" value="08/06/2026" oninput="salvarResumoLocal()">
         </div>
         <div class="resumo-field">
           <label class="resumo-label" for="resumo-semana">Semana</label>
-          <input type="text" id="resumo-semana" class="resumo-input" value="Semana 23 · 25–31/05/2026 (fechamento Maio)" oninput="salvarResumoLocal()">
+          <input type="text" id="resumo-semana" class="resumo-input" value="Semana 24 · 01–08/06/2026" oninput="salvarResumoLocal()">
         </div>
         <div class="resumo-field resumo-field-full">
           <label class="resumo-label" for="resumo-participantes">Participantes</label>
-          <input type="text" id="resumo-participantes" class="resumo-input" value="Livia Oliveira, Matheus Santos, Anna Beatriz Karas, Michele Braatz, Mariana Leite (+ Ferraz — assíncrono)" oninput="salvarResumoLocal()">
+          <input type="text" id="resumo-participantes" class="resumo-input" value="Livia Oliveira, Matheus Santos, Anna Beatriz Karas, Michele Braatz, Mariana Leite, Caroline (HubSpot), Squad CX/Retenção" oninput="salvarResumoLocal()">
         </div>
       </div>
 
       <div class="resumo-field resumo-field-full">
         <label class="resumo-label" for="resumo-ata">Ata completa</label>
         <textarea id="resumo-ata" class="resumo-textarea" placeholder="Cole aqui toda a ata da reunião..." oninput="salvarResumoLocal()">RESUMO EXECUTIVO — REUNIÃO SEMANAL DE LIDERANÇA DE MARKETING
-Data: 01/06/2026 · Report de fechamento de Maio/2026 · Duração: ~2h30
+Data: 08/06/2026 · Report Semanal · Duração: ~2h30
+Participantes: Livia Oliveira, Matheus Santos, Anna Beatriz Karas, Michele Braatz, Mariana Leite, Caroline (HubSpot), Squad CX/Retenção
 
-==================================================
-1. PÓS ODONTO (UN 1)
-==================================================
-- Receita YTD: R$68,9M, 9% acima de 2025, porém 9,3% abaixo da meta (R$76M). No mês: R$13,8M (forecast/faturado), ~12,4% abaixo da meta (R$15,8M), mas ~7% acima do ano anterior.
-- Captação/Funil: crescimento de leads e VGV inscrito vs 2025, abaixo do projetado. Conversão "inflada" por SBV/Workshop, ~1,5 p.p. abaixo do projetado. 3 consultores a menos que em 2025; leads sem senso de urgência.
-- Custos: CPL R$7,99 acima do projetado, mas ~12% menor MoM e ~40% menor YoY. CAC 12,4% abaixo de Abril. Investimento ~R$30k abaixo do projetado.
-- Redes sociais: engajamento 0,88% (benchmark 2–3%); campanha de lançamento do 2º semestre estruturada (social, e-mail e WhatsApp).
-- Evasão/Retenção: cancelamento 1,6% (igual a Abril); 8.212 alunos ativos; retenção 6,8% — melhor taxa do ano. 157 alunos em risco. Fortaleza e SP lideram solicitações; 9 retenções em Maio.
-- Odonto Experience (BSB e FOR, Maio): 92 inscrições, 59 presentes, ~90% intenção de matrícula, 1 venda (Mestrado de Prótese ~R$64,3K). Avaliação geral 95% excelente.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  FORMATO E ESTRUTURA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Mudança de formato aprovada: reuniões mensais de resultados.
+  · 1ª semana do mês: apresentação de resultados por gestores.
+  · 2ª semana: projetos e iniciativas.
+- Próximas duas semanas sem reunião. Retorno: 1ª semana de julho.
+- Pautas móveis priorizadas no início das reuniões a partir de agora.
 
-==================================================
-2. PÓS MEDICINA (UN 2)
-==================================================
-- Receita YTD: R$23,3M vs R$20,3M orçado (+14,9%; ~R$3M de upside). Mês de Maio: R$5,4M vs R$4,8M (+14,0%), ~R$600K acima do orçado.
-- Projeção: ~R$58M de ARR só com a base atual; mantido o ritmo, pode passar de R$65M no ano. Plano "desafio dos R$70MM" fechado para Diretoria/sócios (29/05).
-- Captação/Vendas: 3.672 leads, 129 pagos, 54 matriculados (Lead→Pago 3,5%; Pago→Matr. 70%). VGV pago R$8,5M (-14% vs meta, +122% YoY); matriculado R$7,3M (-16% vs meta). Vendas ~13% abaixo do desafio, mas 77% acima do orçado.
-- Custos: CAC geral R$4,4K, 37% acima do orçado (R$3,2K); -12% semana contra semana (5K → 4,3K). Sazonalidade de Maio não mapeada no orçamento. Iniciativas de novos funis de ISCA (Simulado Residência 05/06, Cálculo de Remuneração 15/06), teste de LPs com IA, MGM com operações/docentes e BLOG Mandic com TI.
-- GTM Nutrologia concluído; Neuropediatria em régua/ativação; criar GTM TOP 3 (Dermato, Endocrino, Psiquiatria). Criativos Nutrologia: R$11.018 investidos, 55 conversões, 863k impressões (12% da conta no mês).
-- Evasão: 4,1% em Maio (+1,4 p.p. vs Abril); 1.400 ativos; maior mês de solicitações de cancelamento de alunos cursando (32). Migração 100% Zendesk validada.
-- Captação de Pacientes (Clínica): Maio foi o maior volume de agendamentos, 1º mês a romper 3K pacientes; maior faturamento da clínica no ano. No-show subiu para 26,5% (+7 p.p. MoM); capacity estável em 63,9%. Retomada de procedimentos estéticos (botox/preenchimento): receita bruta R$73,2K.
-- Fields/MGM PGMed (ativação 23/04–30/05, concluída): 56 indicações, 3 negociações, 7 conversões, 5 cursos. Total geral R$727.891,45 (Dermato CPS R$577,5K; Dermato DF R$110,4K; Tricologia CPS R$40K).
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. PÓS ODONTO (UN 1)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Receita YTD: R$82,7M vs meta R$91,5M (−9,6%), +14,2% YoY. Destaque: cresceu 5p.p. YoY na semana.
+- Receita mês (forecast): R$14M vs meta R$15,5M (−9,3%), +7,6% YoY.
+- Receita faturada: R$13,8M (−10,9% vs meta, +5,7% YoY).
+- Custos: CPL R$7,99 acima do projetado, mas −12% MoM e −40% YoY. Investimento −R$30K vs projetado. CAC −12,4% vs Abril.
+- Evasão (até 05/06): taxa 0,2% · 7.888 alunos ativos · 145 em risco (ag. rematrícula + abandono) · Retenção 0% no mês.
+- Motivos de evasão: financeiro, distância e insatisfação com o curso.
+- Comunicação: Campanha Copa do Mundo nas redes sociais · início 11/06 na abertura da Copa. Estratégia: gatilho cultural (jogos), conteúdo (especialidades em campo), conversão (inscrição 2º semestre). Parceria MANDIC + CESPU (Portugal) com atualização de perfil e identidade visual.
+- Iniciativas: GTM modelos P, M e G concluídos (em validação) · Playbook de Ciclos (prazo 19/06) · Ativação ciclo 2026.2 (12/06).
+- Fields: Amil 59 vd, AmorSaúde 54 vd, Uniodonto 15 vd, Oral Unic 10 vd, SODF 9 vd, Brazil D 7 vd, Galena 1 vd. Field FOR em contratação; Field BH em onboarding.
 
-==================================================
-3. GRADUAÇÃO (UN 3)
-==================================================
-- Receita YTD Medicina (consolidado): R$180,8M vs R$183M meta (-1,2%); +15,4% vs ano anterior. Mês: R$35,3M vs R$36,4M (-3,0%). Gap de 1,2% vs meta YTD ainda não recuperado.
-- Funil ciclo 26.2: 14.295 leads, 5.033 inscritos, 342 pagos, 0 matriculados (matrículas em Junho/26). Limeira 222/290 (77%); Sertão 120/355 (34%). +76 pagos na semana (maior volume histórico do ciclo).
-- Campanhas: reta final dobrou os pagos e cortou custo por pago (-35% Mandic; -60% FMS). Maio com 55% mais pagos que Abril.
-- OOH / Search Lift: efeito positivo em busca genérica (Mandic +19,6 p.p.; FMS +72,6 p.p.). Tráfego orgânico das páginas de curso cresceu (Mandic +49% views; FMS +110% views) com queda de rejeição → tráfego mais qualificado. Correlação, não causalidade.
-- Fields: MGM unificado (início 29/04) com 8 inscrições, 3 pagos; Blitz Limeira (201 leads) e FMS (68 leads) concluídas.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  2. PÓS MEDICINA (UN 2)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Receita YTD (Maio fechado): R$23,3M vs R$20,3M orçado (+14,9%; ~R$3M de upside). +308,8% YoY.
+- Receita Maio forecast: R$5,4M vs meta R$4,8M (+14,0%), +253% YoY.
+- Receita Maio faturado: R$5,4M (+12,4% vs meta, +260% YoY).
+- Projeção: ARR ~R$58M apenas com a base atual; ritmo do YTD pode levar a R$65M+. Plano desafio R$70MM entregue à Diretoria (29/05).
+- Vendas Junho S1: 14 vendas vs meta 16 (87,5%). VGV abaixo por mix: Psiquiatria R$59K e Online R$32K. Delta recuperável ao longo do mês.
+- Funil (Maio): 3.672 leads · 129 pagos · 54 matriculados. Lead→Pago 3,5% · Pago→Matr. 70%. VGV pago R$8,5M (−14% vs meta, +122% YoY).
+- CAC: R$4,4K (+37% vs orçado R$3,2K); redução de −12% WoW (5K→4,3K). CPM Google +15% MoM; CPL geral R$236 (+22% MoM).
+- Iniciativas de captação: Simulado Residência (05/06) · Cálculo de Remuneração (15/06) · Testes de LP com IA · BLOG Mandic com TI (30/06) · MGM com operações/docentes (30/06).
+- GTM: Nutrologia concluído · Neuropediatria em régua (CRM ativo desde 22/05; mídia na fase final) · próximo: GTM TOP 3 (Dermato, Endocrino, Psiquiatria). Criativos Endocrino: R$2.987 investidos, 412 conversões; destaque aula-v2 (324 conv, R$5,80/conv).
+- Evasão (até 05/06): taxa 1,5% · 1.374 ativos · 62 em risco · projeção mês 3,2%. Cursos online impactam; análise de impacto prazo 08/06. Reunião semanal CX + Produtos iniciada 03/06.
+- Captação de Pacientes: Junho 2,4K agendamentos / ocupação 58,3% (vs meta 4,1K). Julho 1,6K / 39,3% (vs meta 4,0K). Integração Supabase × Consulta Já ativa desde sábado. Próximos: automações confirmação para reduzir no-show (15/06) · cobrança de sinal no agendamento (22/06) · triagem digital expandida (29/06).
+- Fields/MGM PGMed (23/04–30/05): 56 indicações · 3 negociações · 7 conversões · 5 cursos · R$727.891,45 total.
+- Redes sociais: @posmedmandic · 2,1M visualizações (+15,4%) · alcance 404,6K (+5,1%) · Linktree CTR 92,2% (benchmark 80–85%).
 
-==================================================
-4. PAUTAS MÓVEIS / CROSS-BU
-==================================================
-- Nível de Serviço (Op. Adm): SLAs majoritariamente dentro da meta; pontos de atenção em tempo de 1ª resposta em algumas frentes. Termo de Adesão Stricto Sensu em atraso (nova data 09/06).
-- CRM HubSpot: em andamento — mapeamento de jornadas, consolidação de usuários/perfis, pipelines definidos (28/05).
-- CDP/GA4/GTM: ~40%; parceiro Métrica Boss; início da implantação 01/06.
-- MGM V2 (Pós Médica, Zendesk): 90%, processo estruturado, pendente definição do financeiro para Go-live. MGM V3 (BeeViral): 10%, em análise comercial.
-- NPS 26.1 & ENAMED: fechamento realizado; Close the Loop em andamento; planos de ação por unidade (prazos 12/06). Substituição do INDECX em validação.
-- Inteligência Competitiva: concorrentes diretos com datas na "Semana da Mandic" (Claretiano, Faculdade de Belo Jardim); Afya com ecossistema como argumento de venda e antecipação de Black Friday (até 40% off).
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  3. GRADUAÇÃO (UN 3)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- Vestibular 26.2A: presença consolidada 72,4%. Limeira recuou −10,6p.p. com base quase dobrada (117→207 inscritos). Arcoverde estável +1,5p.p.
+- 1ª Chamada: 85 convocados (50 Arcoverde + 35 Limeira). Vestibular B: 11/06 · 132 convocados com isenção de taxa (41 Arcoverde + 91 Limeira).
+- Ciclo 26.2: Vestibular B 11/06 · Réguas WhatsApp revisadas 12/06 · 2ª leva de vídeos 12/06. Vestibular C: briefing enviado 03/06, materiais previstos 19/06.
+- Ciclo 2027.1: GTM 15/06 · Estudo criativos ciclos anteriores 15/06 · KV v1 19/06.
+- Fields (Jan→08/06): 38 ações totais (Campinas: 8 visitas + 15 feiras; Limeira, FMS e Araras com visitas e feiras). LP para colégios em construção.
+- Social Limeira: Collab Gazeta · 10,5K views (+517,6%) · engajamento 2,52% (benchmark 2–3%). Social FMS: Collab Arco Verde Indica · 3,4K views · 2,47% engajamento.
 
-==================================================
-5. PONTOS OPERACIONAIS DISCUTIDOS (transcrição)
-==================================================
-- No-show / agendamentos: primeiro teste de integração com o Consulta Já deu certo; objetivo de eliminar o gargalo de subir ~1.000 agendamentos/mês manualmente (~2.000 min/semana). Próximo passo: automações de consulta com agenda espelhada 1:1 entre a base e o Consulta Já, garantindo disparos de no-show efetivos.
-- WhatsApp / utilidade: na Pós Odonto, de 3 modelos subidos, 1 passou como utilidade e 2 voltaram; na Pós Médica, modelo de confirmação de turma online passou como utilidade. Acompanhar quality rating da conta (comunicação transacional não deve pesar).
-- Agendamentos Junho: subiram de 1.600 para 2.100 na semana (mais de 500 agendamentos dentro de Junho).
-- Ação social "chocolate"/indicação: gerou barulho positivo em redes sociais; venda de aparelho em DF + caso em Lima (~R$727K). Avaliação: medição prejudicada — não dá para isolar o lift de indicação (formulário não parametrizado/UTM faltando). Aprendizado para repetir a ação com link parametrizado.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  4. PAUTAS MÓVEIS / CROSS-BU
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- HubSpot: 20% de configuração concluída. Domínio/subdomínio 12/06. Pipelines comerciais até 11/06 (sessão terça ou quarta). Reuniões semanais: segundas 11h (agenda interna/Caroline) e quintas 15h (consultoria). Migração RD Station sem perdas — higienização e remoção de duplicatas em andamento. Campo de engajamento (básico/engajado/super engajado). Mensageria via SpreadChat (demo quinta 15h). Treinamento de consultores necessário — foco em processo antes da ferramenta.
+- GTM/GA4: GTM atual em 98% de saturação causando pixels não funcionais e dados incorretos. Decisão: reconstruir do zero. Novos containers GTM entregues 16/06. Consultoria Métrica Boss (parceiro premium HubSpot).
+- MGM V2 (Zendesk): 90% · pendente financeiro Go-live. MGM V3 (BeeViral): 10% · análise comercial.
+- Nível de Serviço Op. Adm: Tempo 1ª resposta 0,7h (<2h ✅) · Resolução 4,8h (<24h ✅) · Uptime 100%. Cancelamento/reembolso: 1ª resposta 15,4h (acima da meta) · resolução 22,3h. Termo de Adesão Stricto Sensu: nova data 09/06.
+- Social Listening: 127 comentários · 45 de 49 negativos foram reclamações. Caso aluno estrangeiro com 85 comentários em IG/FB/TK já ocultados e em acompanhamento.
+- Redes Sociais @saoleopoldomandic: Instagram 5,3M views (+3,9%) · orgânico 107K (−59,4%) · quase 100% vem de mídia paga · engajamento 0,39% (abaixo benchmark 1–3%). TikTok: 1,4M views (−2,7%) · audiência 64% entre 35–54 anos · orgânico +2,95% · pago −3,19%.
+- NPS 26.1: fechamento realizado · Close the Loop em andamento · Planos de ação por BU (Medicina 12/06, Pós Médica 17/06, Pós Odonto 19/06, Odonto 24/06). Substituição INDECX em validação (prazo 12/06). Projeto Julia: apresentação Carol 09/06.
+- Inteligência Competitiva Graduação: Claretiano (Rio Claro) com vestibular 24/10 (concorre Araras/Limeira); Faculdade Belo Jardim 18/10 (novo curso, impacto direto FMS). Afya: ecossistema como argumento (pós-grad, dupla graduação EAD, Whitebook, Afya Play).
+- Inteligência Competitiva Pós Médica: Afya com descontos crescentes (+25% vs abril), média ainda 15% menor que jul/25.
+- Inteligência Competitiva Pós Odonto: Discovery Mestrado Profissional — problema não é preço, concorrência limitada com mensalidades mais altas. Entrevistas com leads não convertidos prorrogadas até 19/06.
 
-==================================================
-6. DECISÕES E PRÓXIMOS PASSOS
-==================================================
-- Formato da reunião: avaliar ajuste de frequência (possível cadência mensal, com encontro mais longo/completo). Mariana levará a discussão ao Ferraz; alinhamento na quinta. Sugestões a circular de forma assíncrona durante a semana.
-- Ferraz não participa do report ao vivo → enviar import/resumo assíncrono (este registro atende a esse fluxo).
-- Manter foco em automações de agendamento (integração Supabase × Consulta Já, prazo 08/06) e automações de confirmação para reduzir no-show (15/06).
-- Próxima reunião retoma a partir dos pontos de hoje.</textarea>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  PRÓXIMOS PASSOS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+[ALTA] Definir pipelines HubSpot · Sessão terça ou quarta-feira · Prazo: 11/06
+[ALTA] Configurar domínio/subdomínio HubSpot · Responsável: Caroline · Prazo: 12/06
+[ALTA] Demo SpreadChat · Quinta-feira 15h
+[ALTA] Entregar novos containers GTM · Responsável: Caroline/Métricas Boss · Prazo: 16/06
+[ALTA] Automações de confirmação ConsultaJá (redução no-show) · Prazo: 15/06
+[ALTA] Apresentação planos PMG · Quinta-feira
+[ALTA] Campanha Psiquiatria (melhor preço do mercado) · Iniciar imediatamente
+[MÉDIA] Análise impacto cursos online em cancelamentos · Prazo: 08/06
+[MÉDIA] Fechamento DRE Abril + Maio para RMR de Junho · Prazo: 12/06
+[MÉDIA] GTM TOP 3: Dermato, Endocrino, Psiquiatria · Prazo: a definir
+[MÉDIA] Ativação ciclo 2026.2 Pós Odonto · Prazo: 12/06
+[MÉDIA] Vestibular B Graduação + réguas WhatsApp revisadas · Prazo: 11–12/06
+[MÉDIA] Plano Go-To-Market ciclo 2027.1 · Prazo: 15/06
+[MÉDIA] Cobrança sinal no agendamento (link pagamento) · Prazo: 22/06
+[MÉDIA] Monitorar pedidos de certificados/históricos (sinal de transferência) · Contínuo
+[MÉDIA] Projeto Julia — apresentação Carol · Prazo: 09/06
+[MÉDIA] Substituição INDECX — análise requisitos e impacto · Prazo: 12/06</textarea>
       </div>
 
       <div class="resumo-actions">
@@ -964,6 +992,7 @@ async function salvarResumo(){
     alert('Resumo salvo com sucesso.');
     if(statusEl)statusEl.textContent='Resumo salvo às '+hora;
     document.getElementById('save-status').textContent='Resumo salvo às '+hora;
+    await carregarHistoricoGoogle();
   }catch(e){
     console.error('Erro ao salvar resumo',e);
     if(statusEl)statusEl.textContent='Erro ao enviar — dados mantidos localmente.';
