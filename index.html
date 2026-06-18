@@ -1037,15 +1037,18 @@ async function salvarPainel() {
   if (s)   s.textContent = 'Salvando no Google Sheets...';
   try {
     var payload = JSON.stringify(coletarEstadoPainel());
-    var fd = new URLSearchParams();
-    fd.append('action', 'salvarPainel');
-    fd.append('payload', payload);
-    await fetch(GAS_URL, { method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: fd.toString() });
+    var resp = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'salvarPainel', payload: payload })
+    });
+    var json = await resp.json();
+    if (!json || !json.ok) {
+      throw new Error((json && json.erro) ? json.erro : 'Resposta inesperada do servidor');
+    }
     dirty = false;
     var hora = new Date().toLocaleTimeString('pt-BR');
-    if (s) s.textContent = 'Painel salvo às ' + hora;
+    if (s) s.textContent = 'Painel salvo às ' + hora + ' ✓';
     if (btn) btn.textContent = '☁️ Salvar Painel';
   } catch(e) {
     console.error('Erro ao salvar painel', e);
