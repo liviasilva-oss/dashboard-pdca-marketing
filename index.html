@@ -859,7 +859,7 @@ Participantes: Livia Oliveira, Matheus Santos, Anna Beatriz Karas, Michele Braat
 /* ═══════════════════════════════════════════════════════════════
    CONFIGURAÇÃO — preencha com a URL do seu Apps Script publicado
    ═══════════════════════════════════════════════════════════════ */
-const GAS_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwl4BRT-3ozFQLI_Xv0pDdMUazMEdHoMjnQp59JZ9guzflyoKaQmKk7vKWTCZ4hoE3zbw/exec";
 
 /* ── estado de "sujo" ── */
 var dirty = false;
@@ -979,107 +979,536 @@ function refreshCounts(bu){
   });
 }
 
-/* ══════════ PERSISTÊNCIA DO PAINEL — Google Sheets ══════════ */
+/* ══════════ PERSISTÊNCIA DO PAINEL — Google Sheets ══════════
+   Envia o estado como JSON no corpo da requisição (Content-Type text/plain,
+   que é "simple request" e NÃO dispara preflight CORS), e LÊ a resposta do
+   servidor — sem no-cors. O Apps Script deve ler JSON.parse(e.postData.contents). */
 
-/** Coleta o estado editável de todo o painel como objeto JSON */
+/* Resolve a URL do Apps Script — exclusivamente GAS_URL, sem fallback. */
+function getGASUrl() {
+  return GAS_URL;
+}
+
+/* innerHTML NÃO serializa o que o usuário digitou em input/textarea nem a
+   opção escolhida em select. Aqui jogamos o valor "vivo" para os atributos. */
+function normalizarCamposEditaveis(root) {
+  root.querySelectorAll('input').forEach(function (inp) {
+    if (inp.type === 'checkbox' || inp.type === 'radio') {
+      if (inp.checked) inp.setAttribute('checked', 'checked');
+      else inp.removeAttribute('checked');
+    } else {
+      inp.setAttribute('value', inp.value != null ? inp.value : '');
+    }
+  });
+  root.querySelectorAll('textarea').forEach(function (ta) {
+    ta.textContent = ta.value != null ? ta.value : '';
+  });
+  root.querySelectorAll('select').forEach(function (sel) {
+    Array.prototype.forEach.call(sel.options, function (o) {
+      if (o.value === sel.value) o.setAttribute('selected', 'selected');
+      else o.removeAttribute('selected');
+    });
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PERSISTÊNCIA POR DADOS — substitui coletarEstadoPainel / aplicarEstadoPainel
+   ───────────────────────────────────────────────────────────────────────
+   Em vez de gravar innerHTML, gravamos APENAS os dados de cada componente.
+   A interface é reconstruída em runtime gerando markup idêntico ao original.
+   Layout, CSS e aparência NÃO mudam. Apenas a forma de salvar/carregar muda.
+
+   Esquema (chaves curtas — decisão de modelo de dados; não é compressão/corte):
+     versao, H{t,s,bg}, B{<bu>:{t,s,K[],P{pl,do,ck,ac},R[],PE{pe[],dn[]}}},
+     F{t,s,pe[],dn[],CB{pe[],dn[]}}, RZ{data,semana,participantes,ata}
+       KPI : {l,v,u,c,r}      CARD : {t,d,o,p,x}     PILL : {tx,cl}
+       WEEK: {l,rg,ps[]}      PA   : {e,rs,pz,st}     FTASK: {t,d,p,x,b}
+   ═══════════════════════════════════════════════════════════════════════ */
+
+function _txt(el) { return el ? el.innerHTML : ''; }
+function _q(root, sel) { return root ? root.querySelector(sel) : null; }
+function _all(root, sel) { return root ? Array.prototype.slice.call(root.querySelectorAll(sel)) : []; }
+
+function _prioridadeCard(card) {
+  if (card.classList.contains('priority-high')) return 'high';
+  if (card.classList.contains('priority-mid'))  return 'mid';
+  if (card.classList.contains('priority-low'))  return 'low';
+  return 'low';
+}
+
+/* ───────────────────────── COLETA (DOM → dados) ───────────────────────── */
+
+function _coletarTaskCard(card) {
+  return {
+    t: _txt(_q(card, '.task-title')),
+    d: _txt(_q(card, '.task-date')),
+    o: _txt(_q(card, '.task-owner')),
+    p: _prioridadeCard(card),
+    x: card.classList.contains('done-card')
+  };
+}
+
+function _coletarColunaPDCA(bodyId) {
+  return _all(document.getElementById(bodyId), '.task-card').map(_coletarTaskCard);
+}
+
+function _coletarPARow(row) {
+  var metas = _all(row, '.pa-meta-val');
+  var sel   = _q(row, '.pa-status-sel');
+  return {
+    e:  _txt(_q(row, '.pa-row-desc')),
+    rs: metas[0] ? metas[0].innerHTML : '',
+    pz: metas[1] ? metas[1].innerHTML : '',
+    st: sel ? sel.value : 'pending'
+  };
+}
+
+function _coletarKPIs(barId) {
+  return _all(document.getElementById(barId), '.kpi-card').map(function (c) {
+    var cor = '';
+    ['ok', 'warn', 'danger'].forEach(function (k) { if (c.classList.contains(k)) cor = k; });
+    return {
+      l: _txt(_q(c, '.kpi-label')),
+      v: _txt(_q(c, '.kpi-value')),
+      u: _txt(_q(c, '.kpi-sub')),
+      c: cor,
+      r: !!_q(c, '.kpi-rm')
+    };
+  });
+}
+
+function _coletarRoadmap(secEl) {
+  return _all(secEl, '.roadmap-week').map(function (wk) {
+    var pills = _all(wk, '.rm-pill').map(function (p) {
+      var cls = Array.prototype.slice.call(p.classList).filter(function (c) { return c !== 'rm-pill'; });
+      return { tx: p.innerHTML, cl: cls.join(' ') };
+    });
+    return { l: _txt(_q(wk, '.rw-wl')), rg: _txt(_q(wk, '.rw-dr')), ps: pills };
+  });
+}
+
+function _coletarPendencias(bu) {
+  return {
+    pe: _all(document.getElementById('pa-' + bu + '-pending'), '.pa-row').map(_coletarPARow),
+    dn: _all(document.getElementById('pa-' + bu + '-done'),    '.pa-row').map(_coletarPARow)
+  };
+}
+
+function _coletarBUPadrao(bu) {
+  var secEl = document.getElementById('bu-' + bu);
+  if (!secEl) return null;
+  return {
+    t: _txt(_q(secEl, '.section-header h2')),
+    s: _txt(_q(secEl, '.section-header .sec-sub')),
+    K: _coletarKPIs('kpi-' + bu),
+    P: {
+      pl: _coletarColunaPDCA(bu + '-plan'),
+      do: _coletarColunaPDCA(bu + '-do'),
+      ck: _coletarColunaPDCA(bu + '-check'),
+      ac: _coletarColunaPDCA(bu + '-act')
+    },
+    R:  _coletarRoadmap(secEl),
+    PE: _coletarPendencias(bu)
+  };
+}
+
+function _coletarFTask(t) {
+  var pri = _q(t, '.f-pri');
+  var doneBadge = _q(t, '.f-done-badge');
+  return {
+    t: _txt(_q(t, '.f-task-title')),
+    d: _txt(_q(t, '.f-date')),
+    p: pri ? pri.innerHTML : '',
+    x: t.classList.contains('f-done'),
+    b: doneBadge ? doneBadge.innerHTML : ''
+  };
+}
+
+function _coletarFerraz() {
+  var secEl = document.getElementById('bu-ferraz');
+  if (!secEl) return null;
+  var cols = _all(secEl, '.ferraz-cols > div');
+  return {
+    t: _txt(_q(secEl, '.section-header h2')),
+    s: _txt(_q(secEl, '.section-header .sec-sub')),
+    pe: cols[0] ? _all(cols[0], '.f-task').map(_coletarFTask) : [],
+    dn: cols[1] ? _all(cols[1], '.f-task').map(_coletarFTask) : [],
+    CB: {
+      pe: _all(document.getElementById('pa-ferraz-pending'), '.pa-row').map(_coletarPARow),
+      dn: _all(document.getElementById('pa-ferraz-done'),    '.pa-row').map(_coletarPARow)
+    }
+  };
+}
+
+/* COLETOR PRINCIPAL.
+   OBS.: o Resumo de Reunião (data/semana/participantes/ata) NÃO entra aqui —
+   ele já é persistido na sua rota dedicada salvarResumo()/carregarResumoGoogle(),
+   que grava na aba de resumos. Duplicá-lo neste payload era o que inflava o JSON
+   (a "ata" sozinha passa de 5.000 caracteres). Mantendo-o fora, o painel fica
+   folgado abaixo do limite — sem cortar, comprimir ou truncar nada. */
 function coletarEstadoPainel() {
-  var estado = { topbar: {}, secoes: {} };
+  var estado = { versao: 3, H: {}, B: {}, F: null };
+
   var h1 = document.querySelector('.top-bar h1');
   var p  = document.querySelector('.top-bar p');
   var bd = document.querySelector('.top-bar .badge');
-  if (h1) estado.topbar.titulo    = h1.innerHTML;
-  if (p)  estado.topbar.subtitulo = p.innerHTML;
-  if (bd) estado.topbar.badge     = bd.innerHTML;
+  if (h1) estado.H.t  = h1.innerHTML;
+  if (p)  estado.H.s  = p.innerHTML;
+  if (bd) estado.H.bg = bd.innerHTML;
 
-  ['bu-med','bu-odonto','bu-grad','bu-cross','bu-ferraz'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    // persiste o valor dos selects como atributo selected
-    el.querySelectorAll('select').forEach(function(sel) {
-      Array.prototype.forEach.call(sel.options, function(o) {
-        if (o.value === sel.value) { o.setAttribute('selected','selected'); }
-        else { o.removeAttribute('selected'); }
-      });
-    });
-    estado.secoes[id] = el.innerHTML;
+  ['med', 'odonto', 'grad', 'cross'].forEach(function (bu) {
+    var dados = _coletarBUPadrao(bu);
+    if (dados) estado.B[bu] = dados;
   });
+
+  estado.F = _coletarFerraz();
+
   return estado;
 }
 
-/** Aplica um estado salvo de volta no DOM */
-function aplicarEstadoPainel(estado) {
-  if (!estado) return;
-  if (estado.topbar) {
-    var h1 = document.querySelector('.top-bar h1');
-    var p  = document.querySelector('.top-bar p');
-    var bd = document.querySelector('.top-bar .badge');
-    if (h1 && estado.topbar.titulo    != null) h1.innerHTML = estado.topbar.titulo;
-    if (p  && estado.topbar.subtitulo != null) p.innerHTML  = estado.topbar.subtitulo;
-    if (bd && estado.topbar.badge     != null) bd.innerHTML = estado.topbar.badge;
-  }
-  if (estado.secoes) {
-    Object.keys(estado.secoes).forEach(function(id) {
-      var el = document.getElementById(id);
-      if (el) el.innerHTML = estado.secoes[id];
-    });
-  }
-  // reconstrói contadores de pendências
-  ['med','odonto','grad','cross','ferraz'].forEach(function(bu) {
-    try { refreshCounts(bu); } catch(e) {}
+/* ───────────────────── RECONSTRUÇÃO (dados → DOM) ───────────────────── */
+
+function _htmlTaskCard(t, nextId) {
+  var classe = 'task-card ' + (t.x ? 'done-card' : ('priority-' + (t.p || 'low')));
+  var btnDone = t.x
+    ? '<button class="task-btn done-btn" title="Reabrir tarefa" onclick="toggleDone(this)">↺</button>'
+    : '<button class="task-btn done-btn" title="Marcar como concluída" onclick="toggleDone(this)">✓</button>';
+  var btnMove = (nextId && !t.x)
+    ? '<button class="task-btn" onclick="moveCard(this,\'' + nextId + '\')">→</button>'
+    : '';
+  return '<div class="' + classe + '"><div class="task-actions">' + btnDone + btnMove +
+    '<button class="task-btn" onclick="rmCard(this)">×</button></div>' +
+    '<div class="task-title" contenteditable="true">' + (t.t || '') + '</div>' +
+    '<div class="task-meta"><span class="task-date" contenteditable="true">' + (t.d || '') +
+    '</span><span class="task-owner" contenteditable="true">' + (t.o || '') + '</span></div></div>';
+}
+
+function _reconstruirColunaPDCA(bodyId, cards, nextId, addArg) {
+  var body = document.getElementById(bodyId);
+  if (!body) return;
+  var html = (cards || []).map(function (t) { return _htmlTaskCard(t, nextId); }).join('');
+  var addBtn = '<button class="add-task-btn" onclick="addTask(\'' + bodyId + '\',' +
+    (addArg ? '\'' + addArg + '\'' : 'null') + ')">+ Adicionar</button>';
+  body.innerHTML = html + addBtn;
+}
+
+function _reconstruirKPIs(barId, kpis) {
+  var bar = document.getElementById(barId);
+  if (!bar) return;
+  bar.innerHTML = (kpis || []).map(function (k) {
+    var cls = 'kpi-card' + (k.c ? ' ' + k.c : '');
+    var rmBtn = k.r ? '<button class="kpi-rm" onclick="this.closest(\'.kpi-card\').remove();mark()">✕ remover</button>' : '';
+    return '<div class="' + cls + '">' +
+      '<div class="kpi-label" contenteditable="true">' + (k.l || '') + '</div>' +
+      '<div class="kpi-value" contenteditable="true">' + (k.v || '') + '</div>' +
+      '<div class="kpi-sub" contenteditable="true">' + (k.u || '') + '</div>' + rmBtn + '</div>';
+  }).join('');
+}
+
+function _reconstruirRoadmap(secEl, roadmap) {
+  var lanes = _q(secEl, '.roadmap-lanes');
+  if (!lanes) return;
+  lanes.innerHTML = (roadmap || []).map(function (wk) {
+    var pills = (wk.ps || []).map(function (p) {
+      return '<button class="rm-pill ' + (p.cl || 'navy') + '" contenteditable="true">' + (p.tx || '') + '</button>';
+    }).join('');
+    return '<div class="roadmap-week"><div class="rw-header">' +
+      '<div class="rw-wl" contenteditable="true">' + (wk.l || '') + '</div>' +
+      '<div class="rw-dr" contenteditable="true">' + (wk.rg || '') + '</div></div>' +
+      '<div class="rw-body">' + pills +
+      '<button class="add-rm-btn" onclick="addPill(this)">+</button></div></div>';
+  }).join('');
+}
+
+function _htmlPARow(r, bu, rotuloResp) {
+  var done = r.st === 'done';
+  var selCls = done ? 's-done' : 's-pending';
+  var opts = '<option value="pending"' + (done ? '' : ' selected') + '>⏳ Pendente</option>' +
+             '<option value="done"' + (done ? ' selected' : '') + '>✅ Concluído</option>';
+  return '<div class="pa-row' + (done ? ' done-row' : '') + '" data-bu="' + bu + '">' +
+    '<div class="pa-row-actions"><button class="task-btn" onclick="togglePA(this)">⇄</button>' +
+    '<button class="task-btn" onclick="rmPA(this)">×</button></div>' +
+    '<div class="pa-row-desc" contenteditable="true">' + (r.e || '') + '</div>' +
+    '<div class="pa-row-meta">' +
+    '<div class="pa-meta-field"><span class="pa-meta-label">' + rotuloResp + '</span>' +
+    '<span class="pa-meta-val" contenteditable="true">' + (r.rs || '') + '</span></div>' +
+    '<div class="pa-meta-field"><span class="pa-meta-label">Prazo</span>' +
+    '<span class="pa-meta-val" contenteditable="true">' + (r.pz || '') + '</span></div>' +
+    '<div class="pa-meta-field"><span class="pa-meta-label">Status</span>' +
+    '<select class="pa-status-sel ' + selCls + '" onchange="onSelChange(this)">' + opts + '</select></div>' +
+    '</div></div>';
+}
+
+function _reconstruirPendencias(bu, pend, rotuloResp) {
+  [['pe', 'pending'], ['dn', 'done']].forEach(function (par) {
+    var body = document.getElementById('pa-' + bu + '-' + par[1]);
+    if (!body) return;
+    var rows = (pend && pend[par[0]]) ? pend[par[0]] : [];
+    body.innerHTML = rows.map(function (r) { return _htmlPARow(r, bu, rotuloResp); }).join('');
   });
 }
 
-/** Salva o estado completo do painel no Google Sheets via Apps Script */
+function _reconstruirBUPadrao(bu, dados) {
+  if (!dados) return;
+  var secEl = document.getElementById('bu-' + bu);
+  if (!secEl) return;
+
+  var h2 = _q(secEl, '.section-header h2');
+  var sub = _q(secEl, '.section-header .sec-sub');
+  if (h2 && dados.t != null) h2.innerHTML = dados.t;
+  if (sub && dados.s != null) sub.innerHTML = dados.s;
+
+  _reconstruirKPIs('kpi-' + bu, dados.K);
+
+  if (dados.P) {
+    _reconstruirColunaPDCA(bu + '-plan',  dados.P.pl, bu + '-do',    bu + '-do');
+    _reconstruirColunaPDCA(bu + '-do',    dados.P.do, bu + '-check', bu + '-check');
+    _reconstruirColunaPDCA(bu + '-check', dados.P.ck, bu + '-act',   bu + '-act');
+    _reconstruirColunaPDCA(bu + '-act',   dados.P.ac, null,          null);
+  }
+
+  _reconstruirRoadmap(secEl, dados.R);
+  _reconstruirPendencias(bu, dados.PE, 'Responsável');
+  try { refreshCounts(bu); } catch (e) {}
+}
+
+function _htmlFTask(t) {
+  var cls = 'f-task' + (t.x ? ' f-done' : '');
+  var btn = t.x
+    ? '<button class="task-btn done-btn" title="Reabrir tarefa" onclick="toggleFDone(this)">↺</button>'
+    : '<button class="task-btn done-btn" title="Marcar como concluída" onclick="toggleFDone(this)">✓</button>';
+  var meta;
+  if (t.x && t.b) {
+    meta = '<span class="f-badge f-done-badge">' + t.b + '</span>';
+  } else {
+    meta = '<span class="f-badge f-date" contenteditable="true">' + (t.d || '') + '</span>' +
+           (t.p ? '<span class="f-badge f-pri">' + t.p + '</span>' : '');
+  }
+  return '<div class="' + cls + '"><div class="task-actions">' + btn +
+    '<button class="task-btn" onclick="rmFTask(this)">×</button></div>' +
+    '<div class="f-task-title" contenteditable="true">' + (t.t || '') + '</div>' +
+    '<div class="f-task-meta">' + meta + '</div></div>';
+}
+
+function _reconstruirFerraz(dados) {
+  if (!dados) return;
+  var secEl = document.getElementById('bu-ferraz');
+  if (!secEl) return;
+
+  var h2 = _q(secEl, '.section-header h2');
+  var sub = _q(secEl, '.section-header .sec-sub');
+  if (h2 && dados.t != null) h2.innerHTML = dados.t;
+  if (sub && dados.s != null) sub.innerHTML = dados.s;
+
+  var cols = _all(secEl, '.ferraz-cols > div');
+  if (cols[0]) {
+    var titP = _q(cols[0], '.ferraz-col-title');
+    cols[0].innerHTML = (titP ? titP.outerHTML : '') +
+      (dados.pe || []).map(_htmlFTask).join('') +
+      '<button class="add-f-btn" onclick="addFTask(\'f-pending\')">+ Adicionar tarefa</button>';
+  }
+  if (cols[1]) {
+    var titD = _q(cols[1], '.ferraz-col-title');
+    cols[1].innerHTML = (titD ? titD.outerHTML : '') +
+      (dados.dn || []).map(_htmlFTask).join('') +
+      '<button class="add-f-btn" onclick="addFTask(\'f-done-list\')">+ Adicionar tarefa</button>';
+  }
+
+  if (dados.CB) {
+    var rotulosVazio = { pending: 'Nenhuma cobrança registrada', done: 'Nenhuma cobrança resolvida ainda' };
+    [['pe', 'pending'], ['dn', 'done']].forEach(function (par) {
+      var body = document.getElementById('pa-ferraz-' + par[1]);
+      if (!body) return;
+      var rows = dados.CB[par[0]] || [];
+      if (rows.length) {
+        body.innerHTML = rows.map(function (r) { return _htmlPARow(r, 'ferraz', 'Cobrar de'); }).join('');
+      } else {
+        body.innerHTML = '<div class="pa-empty">' + rotulosVazio[par[1]] + '</div>';
+      }
+    });
+    var cntP = document.getElementById('cnt-ferraz-pending');
+    var cntD = document.getElementById('cnt-ferraz-done');
+    if (cntP) cntP.textContent = (dados.CB.pe || []).length;
+    if (cntD) cntD.textContent = (dados.CB.dn || []).length;
+  }
+}
+
+/* APLICADOR PRINCIPAL */
+function aplicarEstadoPainel(estado) {
+  if (!estado) return;
+
+  /* Compatibilidade retroativa: estado antigo (innerHTML em .secoes) */
+  if (estado.secoes && !estado.B) {
+    if (estado.topbar) {
+      var h1o = document.querySelector('.top-bar h1');
+      var po  = document.querySelector('.top-bar p');
+      var bdo = document.querySelector('.top-bar .badge');
+      if (h1o && estado.topbar.titulo    != null) h1o.innerHTML = estado.topbar.titulo;
+      if (po  && estado.topbar.subtitulo != null) po.innerHTML  = estado.topbar.subtitulo;
+      if (bdo && estado.topbar.badge     != null) bdo.innerHTML = estado.topbar.badge;
+    }
+    Object.keys(estado.secoes).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && typeof estado.secoes[id] === 'string') el.innerHTML = estado.secoes[id];
+    });
+    if (estado.resumo) {
+      ['data', 'semana', 'participantes', 'ata'].forEach(function (campo) {
+        var elc = document.getElementById('resumo-' + campo);
+        if (elc && estado.resumo[campo] != null) elc.value = estado.resumo[campo];
+      });
+    }
+    ['med', 'odonto', 'grad', 'cross', 'ferraz'].forEach(function (bu) {
+      try { refreshCounts(bu); } catch (e) {}
+    });
+    return;
+  }
+
+  /* Formato novo (versao 3) — reconstrução por dados */
+  if (estado.H) {
+    var h1 = document.querySelector('.top-bar h1');
+    var p  = document.querySelector('.top-bar p');
+    var bd = document.querySelector('.top-bar .badge');
+    if (h1 && estado.H.t  != null) h1.innerHTML = estado.H.t;
+    if (p  && estado.H.s  != null) p.innerHTML  = estado.H.s;
+    if (bd && estado.H.bg != null) bd.innerHTML = estado.H.bg;
+  }
+
+  if (estado.B) {
+    ['med', 'odonto', 'grad', 'cross'].forEach(function (bu) {
+      _reconstruirBUPadrao(bu, estado.B[bu]);
+    });
+  }
+
+  _reconstruirFerraz(estado.F);
+
+  /* Resumo de Reunião é restaurado por carregarResumoGoogle()/carregarResumoLocal(),
+     não por este aplicador — ver chamadas no init (window load). */
+}
+
+/* Normaliza qualquer formato de resposta para o objeto de estado do painel.
+   Aceita: {painel:{...}}, {painel:"<json>"}, {ConteudoJSON:"<json>"} ou objeto puro. */
+function extrairEstado(json) {
+  if (!json) return null;
+  var bruto = (json.painel !== undefined) ? json.painel
+            : (json.conteudo !== undefined) ? json.conteudo
+            : (json.ConteudoJSON !== undefined) ? json.ConteudoJSON
+            : null;
+  // Se nada disso veio mas o próprio objeto já parece o estado, usa-o.
+  if (bruto == null) {
+    if (json.secoes || json.topbar) bruto = json;
+    else return null;
+  }
+  if (bruto === '') return null;
+  if (typeof bruto === 'string') {
+    try { return JSON.parse(bruto); }
+    catch (e) { console.error('[painel] ConteudoJSON inválido (não é JSON):', e, bruto); return null; }
+  }
+  return bruto;
+}
+
+/** Salva o estado completo do painel no Google Sheets via Apps Script. */
 async function salvarPainel() {
   var btn = document.getElementById('btn-salvar-painel');
   var s   = document.getElementById('save-status');
+  var url = getGASUrl();
+
+  // 1) Coleta + serialização
+  var estado  = coletarEstadoPainel();
+  var payload = JSON.stringify(estado);
+
+  console.log("URL utilizada:", url);
+  console.log("Payload length:", payload.length);
+  console.log("Estado coletado:", estado);
+
+  // 2) Trava anti-payload-vazio (só dispara se a coleta vier realmente vazia)
+  if (!payload || payload.length < 20 ||
+      !estado.B || Object.keys(estado.B).length === 0) {
+    console.error('[painel] Payload vazio/incompleto — gravação ABORTADA.', estado);
+    if (s) s.textContent = 'Nada para salvar — coleta vazia.';
+    alert('A coleta do painel retornou vazia. Nada foi enviado (para preservar o que já está salvo).');
+    return;
+  }
+
   if (btn) { btn.disabled = true; btn.textContent = '⏳ Salvando...'; }
   if (s)   s.textContent = 'Salvando no Google Sheets...';
+
   try {
-    var payload = JSON.stringify(coletarEstadoPainel());
-    var resp = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action: 'salvarPainel', payload: payload })
+    // 3) Envio do corpo EXATAMENTE como { action, payload }.
+    //    text/plain = simple request (sem preflight) e resposta legível.
+    var corpo = JSON.stringify({ action: "salvarPainel", payload: payload });
+
+    var resp = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: corpo
     });
-    var json = await resp.json();
-    if (!json || !json.ok) {
-      throw new Error((json && json.erro) ? json.erro : 'Resposta inesperada do servidor');
+
+    // 4) Lê a resposta REAL do servidor (sem no-cors, sem verificação falsa)
+    var texto = await resp.text();
+    var json;
+    try { json = JSON.parse(texto); }
+    catch (e) {
+      console.error("[painel] Resposta não-JSON do servidor:", texto);
+      throw new Error("Resposta inválida do Apps Script: " + texto.slice(0, 200));
     }
+    console.log("Resposta servidor:", json);
+
+    // Sucesso quando o servidor NÃO sinaliza erro.
+    var falhou = (json && (json.ok === false || json.erro || json.error));
+    if (falhou) {
+      throw new Error((json.erro || json.error) ? (json.erro || json.error) : "Servidor retornou ok:false");
+    }
+
     dirty = false;
     var hora = new Date().toLocaleTimeString('pt-BR');
     if (s) s.textContent = 'Painel salvo às ' + hora + ' ✓';
     if (btn) btn.textContent = '☁️ Salvar Painel';
-  } catch(e) {
-    console.error('Erro ao salvar painel', e);
-    if (s) s.textContent = 'Erro ao salvar — tente novamente.';
+  } catch (e) {
+    console.error('[painel] Erro ao salvar:', e);
+    if (s) s.textContent = 'Erro ao salvar — ' + e.message;
     if (btn) btn.textContent = '☁️ Salvar Painel';
     alert('Não foi possível salvar o painel.\n' + e.message);
+  } finally {
+    if (btn) btn.disabled = false;
   }
-  if (btn) btn.disabled = false;
 }
 
-/** Carrega o estado do painel do Google Sheets */
+/** Carrega o estado do painel do Google Sheets e reconstrói a interface. */
 async function carregarPainel() {
   var s = document.getElementById('save-status');
+  var url = getGASUrl();
   if (s) s.textContent = 'Carregando painel...';
   try {
-    var resp = await fetch(GAS_URL + '?action=carregarPainel', { method: 'GET' });
-    var json = await resp.json();
-    if (json && json.painel) {
-      aplicarEstadoPainel(json.painel);
-      if (s) s.textContent = 'Painel atualizado às ' + new Date().toLocaleTimeString('pt-BR');
+    var alvo = url + (url.indexOf('?') > -1 ? '&' : '?') + 'action=carregarPainel&_=' + Date.now();
+    console.log("URL utilizada:", alvo);
+
+    var resp = await fetch(alvo, { method: "GET" });
+    var texto = await resp.text();
+    var json;
+    try { json = JSON.parse(texto); }
+    catch (e) {
+      console.error('[painel] resposta do servidor não é JSON válido:', texto);
+      if (s) s.textContent = 'Resposta inválida do servidor.';
+      return;
+    }
+    console.log("Resposta servidor:", json);
+
+    var estado = extrairEstado(json);
+    if (estado) {
+      aplicarEstadoPainel(estado);
+      var quando = (json && json.atualizadoEm) ? (' (' + formatarData(json.atualizadoEm) + ')') : '';
+      if (s) s.textContent = 'Painel atualizado às ' + new Date().toLocaleTimeString('pt-BR') + quando;
     } else {
       if (s) s.textContent = 'Pronto — nenhum estado salvo ainda.';
     }
     dirty = false;
-  } catch(e) {
-    console.error('Erro ao carregar painel', e);
+  } catch (e) {
+    console.error('[painel] Erro de rede ao carregar painel:', e);
     if (s) s.textContent = 'Erro ao conectar com Google Sheets.';
   }
 }
 
-/** Recarrega do servidor com confirmação */
+/** Recarrega do servidor com confirmação. */
 async function recarregarPainel() {
   if (dirty && !confirm('Recarregar do servidor? Alterações não salvas serão perdidas.')) return;
   await carregarPainel();
@@ -1100,7 +1529,7 @@ function saveHTML(){
 window.addEventListener('beforeunload',function(e){if(dirty){e.preventDefault();e.returnValue=''}});
 
 /* ══════════════ RESUMO DA REUNIÃO ══════════════ */
-const API_URL = "https://script.google.com/macros/s/AKfycbwl4BRT-3ozFQLI_Xv0pDdMUazMEdHoMjnQp59JZ9guzflyoKaQmKk7vKWTCZ4hoE3zbw/exec";
+const API_URL = GAS_URL;
 var reuniaoAtualId=null;
 const RESUMO_LS_KEY = "dashboard_pdca_resumo";
 
